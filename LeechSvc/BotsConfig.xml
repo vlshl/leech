@@ -1,0 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<BotsConfig>
+  <Bot Key="mybot" Assembly="Bot.dll" Class="Bot.MyBot" InitData="" />
+</BotsConfig>
