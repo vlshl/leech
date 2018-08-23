@@ -133,9 +133,10 @@ namespace LeechSvc
         /// <param name="server">Адрес сервера</param>
         /// <param name="login">Логин</param>
         /// <param name="password">Пароль</param>
-        public void SetConnectionParams(string server, string login, string password)
+        /// <param name="isLocalMachineProtection">Уровень защиты (на уровне компьютера или на уровне пользователя)</param>
+        public void SetConnectionParams(string server, string login, string password, bool isLocalMachineProtection = false)
         {
-            string data = DataProtect.Encrypt(server, login, password);
+            string data = DataProtect.Encrypt(server, login, password, isLocalMachineProtection);
             _reposBL.SetStrParam(CONNECT_DATA_KEY, data);
         }
     }

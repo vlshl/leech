@@ -54,6 +54,14 @@ namespace LeechSvc
                 if (arg0 == "-connection")
                 {
                     Console.WriteLine("Input connection params");
+                    Console.Write("Protection scope (M - Local machine protection, U - Current user protection): ");
+                    string protectionScope = Console.ReadLine();
+                    bool isLocalMachineProtection = protectionScope.ToUpper() == "M";
+                    if (isLocalMachineProtection)
+                        Console.WriteLine("Local machine protection");
+                    else
+                        Console.WriteLine("Current user protection");
+
                     Console.Write("Server: ");
                     string server = Console.ReadLine();
 
@@ -63,7 +71,7 @@ namespace LeechSvc
                     Console.Write("Password: ");
                     string password = Console.ReadLine();
 
-                    _dataProtect.SetConnectionParams(server, login, password);
+                    _dataProtect.SetConnectionParams(server, login, password, isLocalMachineProtection);
 
                     Console.WriteLine("Connection params saved.");
                     return;
