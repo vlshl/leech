@@ -86,7 +86,7 @@ namespace LeechSvc
             Console.WriteLine("closeterm\tЗакрыть торговый терминал");
             Console.WriteLine("conn\t\tУстановить соединение с сервером брокера (торговый терминал должен быть открыт)");
             Console.WriteLine("disconn\t\tРазорвать соединение с сервером брокера");
-            Console.WriteLine("quit\t\tВыход из программы");
+            Console.WriteLine("exit\t\tВыход из программы");
 
             this.OnStart(args);
 
@@ -96,7 +96,7 @@ namespace LeechSvc
                 {
                     Console.Write(">");
                     string line = Console.ReadLine();
-                    if (line == "quit") { this.OnStop(); break; }
+                    if (line == "exit") { this.OnStop(); break; }
                     if (line == "opensess") _app.OpenSession();
                     if (line == "closesess") _app.CloseSession();
                     if (line == "openterm") _app.OpenTerminal();

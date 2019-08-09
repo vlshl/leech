@@ -19,7 +19,7 @@ namespace Leech
     /// </summary>
     public class TickDispatcher : ITickDispatcher
     {
-        private ITickSource _tickSource = null;
+        //private ITickSource _tickSource = null;
         private List<TickThreadControl> _ttcs = null;
         private Dictionary<int, List<Tick>> _insID_ticks;
         private readonly ILogger _logger = null;

@@ -235,17 +235,17 @@ namespace LeechSvc
                 if (RowID <= _allTrades_lastRowID) return;
                 _allTrades_lastRowID = RowID;
 
-                string secboard = ((string)fields[5]).Trim();
+                string secboard = Convert.ToString(fields[5]).Trim();
                 if (secboard != _secBoard) return;
 
-                string ticker = ((string)fields[6]).Trim();
-                long tradeNo = (long)fields[2];
-                DateTime time = ((DateTime)fields[3]).AddHours(_addHours);
+                string ticker = Convert.ToString(fields[6]).Trim();
+                long tradeNo = Convert.ToInt64(fields[2]);
+                DateTime time = Convert.ToDateTime(fields[3]).AddHours(_addHours);
                 if (time.TimeOfDay < _startSessionTime) time = new DateTime(time.Year, time.Month, time.Day, _startSessionTime.Hours, _startSessionTime.Minutes, _startSessionTime.Seconds);
                 if (time.TimeOfDay > _endSessionTime) time = new DateTime(time.Year, time.Month, time.Day, _endSessionTime.Hours, _endSessionTime.Minutes, _endSessionTime.Seconds);
 
-                int lots = (int)fields[8];
-                double price = (double)fields[9];
+                int lots = Convert.ToInt32(fields[8]);
+                double price = Convert.ToDouble(fields[9]);
 
                 Common.Data.Instrum ins = _instrumTable.GetInstrum(ticker);
                 if (ins == null) return;
@@ -257,50 +257,49 @@ namespace LeechSvc
                 if (RowID <= _securities_lastRowID) return;
                 _securities_lastRowID = RowID;
 
-                string secboard = ((string)fields[1]).Trim();
+                string secboard = Convert.ToString(fields[1]).Trim();
                 if (secboard != _secBoard) return;
 
-                string ticker = ((string)fields[2]).Trim();
-                string name = ((string)fields[3]).Trim();
-                string shortname = ((string)fields[4]).Trim();
-                int lotsize = (int)fields[13];
-                double pricestep = (double)fields[15];
-                int decimals = (int)fields[17];
+                string ticker = Convert.ToString(fields[2]).Trim();
+                string name = Convert.ToString(fields[3]).Trim();
+                string shortname = Convert.ToString(fields[4]).Trim();
+                int lotsize = Convert.ToInt32(fields[13]);
+                decimal pricestep = Convert.ToDecimal(fields[15]);
+                int decimals = Convert.ToInt32(fields[17]);
 
-                _instrumTable.SyncInstrum(ticker, shortname, name, lotsize, decimals, (decimal)pricestep);
+                _instrumTable.SyncInstrum(ticker, shortname, name, lotsize, decimals, pricestep);
             }
             else if (_trdacc_table != null && OpenID == _trdacc_table.ID)
             {
-                string account = ((string)fields[1]).Trim();
-                string name = ((string)fields[2]).Trim();
+                string account = Convert.ToString(fields[1]).Trim();
+                string name = Convert.ToString(fields[2]).Trim();
                 _accountTable.AddAccount(account, name);
             }
             else if (_orders_table != null && OpenID == _orders_table.ID)
             {
-                var ticker = ((string)fields[21]).Trim();
+                var ticker = Convert.ToString(fields[21]).Trim();
                 var ins = _instrumTable.GetInstrum(ticker);
                 if (ins == null) return;
 
-                string accCode = ((string)fields[19]).Trim();
+                string accCode = Convert.ToString(fields[19]).Trim();
                 var acc = _accountTable.GetAccount(accCode);
                 if (acc == null) return;
 
                 Order order = new Order();
-                order.OrderNo = (long)fields[1];
-                order.Time = ((DateTime)fields[3]).AddHours(_addHours);
+                order.OrderNo = Convert.ToInt64(fields[1]);
+                order.Time = Convert.ToDateTime(fields[3]).AddHours(_addHours);
                 order.InsID = ins.InsID;
                 order.AccountID = acc.AccountID;
 
-                var bs = ((string)fields[12]).Trim();
+                var bs = Convert.ToString(fields[12]).Trim();
                 order.BuySell = bs == "B" ? BuySell.Buy : BuySell.Sell;
 
-                order.LotCount = (int)fields[25];
+                order.LotCount = Convert.ToInt32(fields[25]);
 
-                double p = (double)fields[23];
-                order.Price = (decimal)p;
+                order.Price = Convert.ToDecimal(fields[23]);
                 if (order.Price == 0) order.Price = null;
 
-                var status = ((string)fields[10]).Trim();
+                var status = Convert.ToString(fields[10]).Trim();
                 if (status == "M")
                     order.Status = OrderStatus.Trade;
                 else if (status == "C")
@@ -316,42 +315,40 @@ namespace LeechSvc
             }
             else if (_stoporders_table != null && OpenID == _stoporders_table.ID)
             {
-                string secboard = ((string)fields[4]).Trim();
+                string secboard = Convert.ToString(fields[4]).Trim();
                 if (secboard != _secBoard) return;
 
-                var ticker = ((string)fields[5]).Trim();
+                var ticker = Convert.ToString(fields[5]).Trim();
                 var ins = _instrumTable.GetInstrum(ticker);
                 if (ins == null) return;
 
-                string accCode = ((string)fields[21]).Trim();
+                string accCode = Convert.ToString(fields[21]).Trim();
                 var acc = _accountTable.GetAccount(accCode);
                 if (acc == null) return;
 
                 StopOrder so = new StopOrder();
-                so.StopOrderNo = (long)fields[3];
-                so.Time = ((DateTime)fields[1]).AddHours(_addHours);
+                so.StopOrderNo = Convert.ToInt64(fields[3]);
+                so.Time = Convert.ToDateTime(fields[1]).AddHours(_addHours);
                 so.InsID = ins.InsID;
                 so.AccountID = acc.AccountID;
 
-                var bs = ((string)fields[6]).Trim();
+                var bs = Convert.ToString(fields[6]).Trim();
                 so.BuySell = bs == "B" ? BuySell.Buy : BuySell.Sell;
 
-                var st = ((string)fields[10]).Trim();
+                var st = Convert.ToString(fields[10]).Trim();
                 so.StopType = StopOrderType.TakeProfit;
                 if (st == "L")
                     so.StopType = StopOrderType.StopLoss;
                 else if (st == "P")
                     so.StopType = StopOrderType.TakeProfit;
 
-                double ap = (double)fields[13];
-                so.AlertPrice = (decimal)ap;
+                so.AlertPrice = Convert.ToDecimal(fields[13]);
 
-                double p = (double)fields[14];
-                so.Price = (decimal)p;
+                so.Price = Convert.ToDecimal(fields[14]);
                 if (so.Price == 0) so.Price = null;
 
-                so.LotCount = (int)fields[15];
-                var status = ((string)fields[18]).Trim();
+                so.LotCount = Convert.ToInt32(fields[15]);
+                var status = Convert.ToString(fields[18]).Trim();
                 if (status == "M")
                     so.Status = StopOrderStatus.Order;
                 else if (status == "E")
@@ -369,39 +366,37 @@ namespace LeechSvc
             }
             else if (_trades_table != null && OpenID == _trades_table.ID)
             {
-                var ticker = ((string)fields[6]).Trim();
+                var ticker = Convert.ToString(fields[6]).Trim();
                 var ins = _instrumTable.GetInstrum(ticker);
                 if (ins == null) return;
 
-                string accCode = ((string)fields[28]).Trim();
+                string accCode = Convert.ToString(fields[28]).Trim();
                 var acc = _accountTable.GetAccount(accCode);
                 if (acc == null) return;
 
-                long orderNo = (long)fields[2];
+                long orderNo = Convert.ToInt64(fields[2]);
                 Order order = _orderTable.GetOrder(orderNo);
                 if (order == null) return;
 
                 Trade trade = new Trade();
-                trade.TradeNo = (long)fields[1];
+                trade.TradeNo = Convert.ToInt64(fields[1]);
                 trade.OrderID = order.OrderID;
-                trade.Time = ((DateTime)fields[3]).AddHours(_addHours);
+                trade.Time = Convert.ToDateTime(fields[3]).AddHours(_addHours);
                 trade.InsID = ins.InsID;
                 trade.AccountID = acc.AccountID;
-                var bs = ((string)fields[8]).Trim();
+                var bs = Convert.ToString(fields[8]).Trim();
                 trade.BuySell = bs == "B" ? BuySell.Buy : BuySell.Sell;
-                trade.LotCount = (int)fields[9];
-                double p = (double)fields[10];
-                trade.Price = (decimal)p;
+                trade.LotCount = Convert.ToInt32(fields[9]);
+                trade.Price = Convert.ToDecimal(fields[10]);
 
                 _tradeTable.AddTrade(trade);
             }
             else if (_holding_table != null && OpenID == _holding_table.ID)
             {
-                var ticker = ((string)fields[5]).Trim();
+                var ticker = Convert.ToString(fields[5]).Trim();
                 var ins = _instrumTable.GetInstrum(ticker);
                 if (ins == null) return;
 
-                //string accCode = ((string)fields[3]).Trim();
                 var acc = _accountTable.GetDefaultAccount();
                 if (acc == null) return;
 
@@ -410,11 +405,11 @@ namespace LeechSvc
             }
             else if (_positions_table != null && OpenID == _positions_table.ID)
             {
-                string accCode = ((string)fields[2]).Trim();
+                string accCode = Convert.ToString(fields[2]).Trim();
                 var acc = _accountTable.GetAccount(accCode);
                 if (acc == null) return;
 
-                double pos = (double)fields[11];
+                double pos = Convert.ToDouble(fields[11]);
                 decimal curPos = (decimal)pos;
                 _positionTable.SetPosition(acc.AccountID, curPos);
             }
@@ -426,10 +421,10 @@ namespace LeechSvc
 
             if (OpenID == _stoporders_table.ID)
             {
-                long stopOrderNo = (long)fields[3];
+                long stopOrderNo = Convert.ToInt64(fields[3]);
                 DateTime? endTime = (DateTime?)fields[11]; // время может поменяться на конец текущей торговой сессии, если оно сначало было null. Потом время окончания уже не меняется, например, при снятии заявки пользователем.
                 if (endTime != null) endTime = endTime.Value.AddHours(_addHours);
-                var status = ((string)fields[18]).Trim();
+                var status = Convert.ToString(fields[18]).Trim();
                 StopOrderStatus soStatus;
                 if (status == "M")
                     soStatus = StopOrderStatus.Order;
@@ -446,8 +441,8 @@ namespace LeechSvc
             }
             else if (OpenID == _orders_table.ID)
             {
-                long orderNo = (long)fields[1];
-                var status = ((string)fields[10]).Trim();
+                long orderNo = Convert.ToInt64(fields[1]);
+                var status = Convert.ToString(fields[10]).Trim();
                 OrderStatus orderStatus;
                 if (status == "M")
                     orderStatus = OrderStatus.Trade;
@@ -464,11 +459,10 @@ namespace LeechSvc
             }
             else if (OpenID == _holding_table.ID)
             {
-                var ticker = ((string)fields[5]).Trim();
+                var ticker = Convert.ToString(fields[5]).Trim();
                 var ins = _instrumTable.GetInstrum(ticker);
                 if (ins == null) return;
 
-                //string accCode = ((string)fields[3]).Trim();
                 var acc = _accountTable.GetDefaultAccount();
                 if (acc == null) return;
 
@@ -477,11 +471,11 @@ namespace LeechSvc
             }
             else if (OpenID == _positions_table.ID)
             {
-                string accCode = ((string)fields[2]).Trim();
+                string accCode = Convert.ToString(fields[2]).Trim();
                 var acc = _accountTable.GetAccount(accCode);
                 if (acc == null) return;
 
-                double pos = (double)fields[11];
+                double pos = Convert.ToDouble(fields[11]);
                 decimal curPos = (decimal)pos;
                 _positionTable.SetPosition(acc.AccountID, curPos);
             }
