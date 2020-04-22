@@ -370,7 +370,7 @@ namespace LeechSvc
                 var ins = _instrumTable.GetInstrum(ticker);
                 if (ins == null) return;
 
-                string accCode = Convert.ToString(fields[28]).Trim();
+                string accCode = Convert.ToString(fields[29]).Trim();
                 var acc = _accountTable.GetAccount(accCode);
                 if (acc == null) return;
 
