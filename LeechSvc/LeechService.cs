@@ -53,27 +53,17 @@ namespace LeechSvc
 
                 if (arg0 == "-connection")
                 {
-                    Console.WriteLine("Input connection params");
-                    Console.Write("Protection scope (M - Local machine protection, U - Current user protection): ");
-                    string protectionScope = Console.ReadLine();
-                    bool isLocalMachineProtection = protectionScope.ToUpper() == "M";
-                    if (isLocalMachineProtection)
-                        Console.WriteLine("Local machine protection");
-                    else
-                        Console.WriteLine("Current user protection");
+                    Console.WriteLine("Input broker server connection params");
+                    SetParams(true);
+                    Console.WriteLine("Broker server connection params saved.");
+                    return;
+                }
 
-                    Console.Write("Server: ");
-                    string server = Console.ReadLine();
-
-                    Console.Write("Login: ");
-                    string login = Console.ReadLine();
-
-                    Console.Write("Password: ");
-                    string password = Console.ReadLine();
-
-                    _dataProtect.SetConnectionParams(server, login, password, isLocalMachineProtection);
-
-                    Console.WriteLine("Connection params saved.");
+                if (arg0 == "-pulxer")
+                {
+                    Console.WriteLine("Input pulxer server connection params");
+                    SetParams(false);
+                    Console.WriteLine("Pulxer server connection params saved.");
                     return;
                 }
             }
@@ -109,11 +99,41 @@ namespace LeechSvc
             //this.OnStop();
         }
 
+        private void SetParams(bool isBrokerServer)
+        {
+            Console.Write("Protection scope (M - Local machine protection, U - Current user protection): ");
+            string protectionScope = Console.ReadLine();
+            bool isLocalMachineProtection = protectionScope.ToUpper() == "M";
+            if (isLocalMachineProtection)
+                Console.WriteLine("Local machine protection");
+            else
+                Console.WriteLine("Current user protection");
+
+            Console.Write("Server: ");
+            string server = Console.ReadLine();
+
+            Console.Write("Login: ");
+            string login = Console.ReadLine();
+
+            Console.Write("Password: ");
+            string password = Console.ReadLine();
+
+            if (isBrokerServer)
+            {
+                _dataProtect.SetBrokerParams(server, login, password, isLocalMachineProtection);
+            }
+            else
+            {
+                _dataProtect.SetPulxerParams(server, login, password, isLocalMachineProtection);
+            }
+        }
+
         private void Usage()
         {
             Console.WriteLine("Usage:");
             Console.WriteLine("    LeechSvc.exe                терминальный режим работы");
-            Console.WriteLine("    LeechSvc.exe -connection    установка параметров соединения");
+            Console.WriteLine("    LeechSvc.exe -connection    установка параметров соединения с сервером брокера");
+            Console.WriteLine("    LeechSvc.exe -pulxer        установка параметров соединения с сервером Pulxer");
             Console.WriteLine("    LeechSvc.exe -help          справка");
         }
     }

@@ -3,6 +3,7 @@ using Common.Interfaces;
 using Leech;
 using LeechSvc.BL;
 using LeechSvc.Bots;
+using LeechSvc.LeechPipeClient;
 using LeechSvc.Logger;
 using System.IO;
 
@@ -43,6 +44,7 @@ namespace LeechSvc
         private AllTradesData _allTradesData = null;
         private readonly ILogger _logger = null;
         private readonly DataProtect _dataProtect = null;
+        private LpClientApp _lpClientApp;
 
         public LeechApp(ILeechConfig config, IBotManager botManager, IBotsConfiguration botsConfig, ITickDispatcher tickDisp, IDataStorage dataStorage, 
             IInstrumTable insTable, IStopOrderTable stopOrderTable, IOrderTable orderTable, ITradeTable tradeTable, 
@@ -65,6 +67,7 @@ namespace LeechSvc
             _insStoreData = insStoreData;
             _logger = logger;
             _dataProtect = IoC.Resolve<DataProtect>();
+            _lpClientApp = new LpClientApp(_config, _dataProtect, _accountTable, _instrumTable);
 
             _allTradesData = new AllTradesData(_instrumTable, _config, _insStoreData, _logger);
             _alorTrade = new AlorTradeWrapper(_instrumTable, stopOrderTable, orderTable, tradeTable, 
@@ -99,6 +102,7 @@ namespace LeechSvc
             _botsConfig.Load();
             _botManager.Initialize();
             _alorTrade.Initialize();
+            _lpClientApp.Initialize();
             _logger.AddInfo("LeechApp", "Session opened");
         }
 
@@ -108,6 +112,7 @@ namespace LeechSvc
         public void CloseSession()
         {
             _logger.AddInfo("LeechApp", "Close session ...");
+            _lpClientApp.Close();
             _botManager.Close();
             _alorTrade.Close();
             _allTradesData.SaveData(_tickDispatcher);
@@ -135,10 +140,10 @@ namespace LeechSvc
             string login;
             string password;
 
-            bool isSuccess = _dataProtect.GetConnectionParams(out server, out login, out password);
+            bool isSuccess = _dataProtect.GetBrokerParams(out server, out login, out password);
             if (!isSuccess)
             {
-                _logger.AddInfo("LeechApp", "Connection params error");
+                _logger.AddInfo("LeechApp", "Broker connection params error");
                 return;
             }
 

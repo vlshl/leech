@@ -12,7 +12,8 @@ namespace LeechSvc
     public class DataProtect
     {
         private const byte ENTROPY_SIZE = 32;
-        private static string CONNECT_DATA_KEY = "connect";
+        private static string BROKER_CONNECT_KEY = "connect";
+        private static string PULXER_CONNECT_KEY = "pulxer";
         private static byte[] _salt = {
             0x84, 0x9a, 0x63, 0xc4, 0x19, 0x51, 0x49, 0x59,
             0x9e, 0x0d, 0xe3, 0xf4, 0x36, 0x1f, 0xab, 0xc0,
@@ -118,10 +119,26 @@ namespace LeechSvc
         /// <param name="login">Логин</param>
         /// <param name="password">Пароль</param>
         /// <returns>true - успешно, false - данные получить не удалось</returns>
-        public bool GetConnectionParams(out string server, out string login, out string password)
+        public bool GetBrokerParams(out string server, out string login, out string password)
         {
             server = login = password = "";
-            string data = _reposBL.GetStrParam(CONNECT_DATA_KEY);
+            string data = _reposBL.GetStrParam(BROKER_CONNECT_KEY);
+            if (string.IsNullOrEmpty(data)) return false;
+
+            return DataProtect.Decrypt(data, out server, out login, out password);
+        }
+
+        /// <summary>
+        /// Получить параметры соединения с сервером pulxer
+        /// </summary>
+        /// <param name="server">Url сервера</param>
+        /// <param name="login">Логин</param>
+        /// <param name="password">Пароль</param>
+        /// <returns>true - успешно, false - данные получить не удалось</returns>
+        public bool GetPulxerParams(out string server, out string login, out string password)
+        {
+            server = login = password = "";
+            string data = _reposBL.GetStrParam(PULXER_CONNECT_KEY);
             if (string.IsNullOrEmpty(data)) return false;
 
             return DataProtect.Decrypt(data, out server, out login, out password);
@@ -134,10 +151,23 @@ namespace LeechSvc
         /// <param name="login">Логин</param>
         /// <param name="password">Пароль</param>
         /// <param name="isLocalMachineProtection">Уровень защиты (на уровне компьютера или на уровне пользователя)</param>
-        public void SetConnectionParams(string server, string login, string password, bool isLocalMachineProtection = false)
+        public void SetBrokerParams(string server, string login, string password, bool isLocalMachineProtection = false)
         {
             string data = DataProtect.Encrypt(server, login, password, isLocalMachineProtection);
-            _reposBL.SetStrParam(CONNECT_DATA_KEY, data);
+            _reposBL.SetStrParam(BROKER_CONNECT_KEY, data);
+        }
+
+        /// <summary>
+        /// Сохранить параметры соединения с сервером Pulxer
+        /// </summary>
+        /// <param name="server">Url сервера</param>
+        /// <param name="login">Логин</param>
+        /// <param name="password">Пароль</param>
+        /// <param name="isLocalMachineProtection">Уровень защиты (на уровне компьютера или на уровне пользователя)</param>
+        public void SetPulxerParams(string server, string login, string password, bool isLocalMachineProtection = false)
+        {
+            string data = DataProtect.Encrypt(server, login, password, isLocalMachineProtection);
+            _reposBL.SetStrParam(PULXER_CONNECT_KEY, data);
         }
     }
 }

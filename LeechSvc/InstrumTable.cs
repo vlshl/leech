@@ -5,6 +5,7 @@ using LeechSvc.Logger;
 using Storage;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace LeechSvc
 {
@@ -17,6 +18,7 @@ namespace LeechSvc
         Instrum GetInstrum(string ticker);
         Instrum GetInstrum(int insID);
         void Load();
+        Instrum[] GetInstrums();
     }
 
     /// <summary>
@@ -120,6 +122,15 @@ namespace LeechSvc
         {
             if (!_insID_instrum.ContainsKey(insID)) return null;
             return _insID_instrum[insID];
+        }
+
+        /// <summary>
+        /// Список загруженных инструментов
+        /// </summary>
+        /// <returns></returns>
+        public Instrum[] GetInstrums()
+        {
+            return _insID_instrum.Values.ToArray();
         }
 
         /// <summary>
