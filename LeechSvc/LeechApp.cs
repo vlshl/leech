@@ -67,11 +67,12 @@ namespace LeechSvc
             _insStoreData = insStoreData;
             _logger = logger;
             _dataProtect = IoC.Resolve<DataProtect>();
-            _lpClientApp = new LpClientApp(_config, _dataProtect, _accountTable, _instrumTable);
+            _lpClientApp = new LpClientApp(_config, _dataProtect, _accountTable, _instrumTable, _accountTable, _stopOrderTable, _orderTable,
+                _tradeTable, _positionTable, _holdingTable);
 
             _allTradesData = new AllTradesData(_instrumTable, _config, _insStoreData, _logger);
-            _alorTrade = new AlorTradeWrapper(_instrumTable, stopOrderTable, orderTable, tradeTable, 
-                holdingTable, positionTable, accountTable,
+            _alorTrade = new AlorTradeWrapper(_instrumTable, _stopOrderTable, _orderTable, _tradeTable, 
+                _holdingTable, _positionTable, _accountTable,
                 _tickDispatcher, _config, _logger);
 
             //connBroker = new ConnBroker();
@@ -112,7 +113,6 @@ namespace LeechSvc
         public void CloseSession()
         {
             _logger.AddInfo("LeechApp", "Close session ...");
-            _lpClientApp.Close();
             _botManager.Close();
             _alorTrade.Close();
             _allTradesData.SaveData(_tickDispatcher);
@@ -182,6 +182,7 @@ namespace LeechSvc
         public void Close()
         {
             _logger.AddInfo("LeechApp", "Close");
+            _lpClientApp.Close();
             _scheduler.Stop();
             _dataStorage.Close();
         }

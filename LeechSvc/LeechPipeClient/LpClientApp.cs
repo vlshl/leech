@@ -18,14 +18,16 @@ namespace LeechSvc.LeechPipeClient
         private IAccountTable _accTable;
         private DataProtect _dataProtect;
 
-        public LpClientApp(ILeechConfig config, DataProtect dataProtect, IAccountTable accTable, IInstrumTable instrumTable)
+        public LpClientApp(ILeechConfig config, DataProtect dataProtect, IAccountTable accTable, IInstrumTable instrumTable, 
+            IAccountTable accountTable, IStopOrderTable stopOrderTable, IOrderTable orderTable, ITradeTable tradeTable, 
+            IPositionTable positionTable, IHoldingTable holdingTable)
         {
             _config = config;
             _accTable = accTable;
             _dataProtect = dataProtect;
             _socket = new LpClientSocket();
             _core = new LpCore(_socket, false); // клиент
-            _pipeFactory = new LpAppFactory(_core, instrumTable);
+            _pipeFactory = new LpAppFactory(_core, instrumTable, accountTable, stopOrderTable, orderTable, tradeTable, positionTable, holdingTable);
             _sysPipe = new SystemLp(_pipeFactory, _core);
         }
 

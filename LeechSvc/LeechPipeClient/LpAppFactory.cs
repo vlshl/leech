@@ -5,13 +5,26 @@ namespace LeechSvc.LeechPipeClient
 {
     public class LpAppFactory : ILpFactory
     {
-        private ILpCore _core;
-        private IInstrumTable _instrumTable;
+        private readonly ILpCore _core;
+        private readonly IInstrumTable _instrumTable;
+        private readonly IAccountTable _accountTable;
+        private readonly IStopOrderTable _stopOrderTable;
+        private readonly IOrderTable _orderTable;
+        private readonly ITradeTable _tradeTable;
+        private readonly IPositionTable _positionTable;
+        private readonly IHoldingTable _holdingTable;
 
-        public LpAppFactory(ILpCore core, IInstrumTable instrumTable)
+        public LpAppFactory(ILpCore core, IInstrumTable instrumTable, IAccountTable accountTable, IStopOrderTable stopOrderTable,
+            IOrderTable orderTable, ITradeTable tradeTable, IPositionTable positionTable, IHoldingTable holdingTable)
         {
             _core = core;
             _instrumTable = instrumTable;
+            _accountTable = accountTable;
+            _stopOrderTable = stopOrderTable;
+            _orderTable = orderTable;
+            _tradeTable = tradeTable;
+            _positionTable = positionTable;
+            _holdingTable = holdingTable;
         }
 
         public ILpReceiver CreatePipe(byte[] pipeInitData)
@@ -22,7 +35,7 @@ namespace LeechSvc.LeechPipeClient
 
             if (cmd == "sync")
             {
-                return new SyncPipe(_core, _instrumTable);
+                return new SyncPipe(_core, _instrumTable, _accountTable, _stopOrderTable, _orderTable, _tradeTable, _positionTable, _holdingTable);
             }
 
             return null;

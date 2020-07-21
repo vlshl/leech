@@ -12,6 +12,7 @@ namespace LeechSvc
     public interface ITradeTable
     {
         bool AddTrade(Trade trade);
+        IEnumerable<Trade> GetTrades(int accountId);
     }
 
     public class TradeTable : ITradeTable
@@ -33,6 +34,11 @@ namespace LeechSvc
             }
 
             return true;
+        }
+
+        public IEnumerable<Trade> GetTrades(int accountId)
+        {
+            return _da.GetTrades(accountId, null).ToList();
         }
     }
 }

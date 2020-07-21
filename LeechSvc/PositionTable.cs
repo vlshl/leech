@@ -13,6 +13,7 @@ namespace LeechSvc
     {
         void SetPosition(int accountID, decimal curPos);
         void Load();
+        Cash GetCash(int accountId);
     }
 
     public class PositionTable : IPositionTable
@@ -68,6 +69,11 @@ namespace LeechSvc
                     _accID_curpos.Add(acc.AccountID, 0);
                 }
             }
+        }
+
+        public Cash GetCash(int accountId)
+        {
+            return _da.GetCashes(accountId).FirstOrDefault();
         }
     }
 }

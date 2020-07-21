@@ -15,6 +15,7 @@ namespace LeechSvc
         bool UpdateOrder(long orderNo, OrderStatus status);
         Order GetOrder(long orderNo);
         void Load();
+        IEnumerable<Order> GetOrders(int accountId);
     }
 
     public class OrderTable : IOrderTable
@@ -81,6 +82,11 @@ namespace LeechSvc
                     _id_order.Add(ord.OrderNo, ord);
                 }
             }
+        }
+
+        public IEnumerable<Order> GetOrders(int accountId)
+        {
+            return _id_order.Values.Where(r => r.AccountID == accountId).ToList();
         }
     }
 }

@@ -118,7 +118,7 @@ namespace LeechSvc.LeechPipeClient
                 do
                 {
                     ArraySegment<byte> segm = new ArraySegment<byte>(buffer, 0, buffer.Length);
-                    res = await _socket.ReceiveAsync(segm, _cts.Token);
+                    res = await _socket.ReceiveAsync(segm, _recvCts.Token);
                     ms.Write(buffer, 0, res.Count);
                 } while (!res.EndOfMessage);
 

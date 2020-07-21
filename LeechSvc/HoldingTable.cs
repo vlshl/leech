@@ -13,6 +13,7 @@ namespace LeechSvc
     {
         void SetHolding(int accountID, int insID, int lots);
         void Load();
+        IEnumerable<Holding> GetHoldings(int accountId);
     }
 
     public class HoldingTable : IHoldingTable
@@ -101,6 +102,11 @@ namespace LeechSvc
                     }
                 }
             }
+        }
+
+        public IEnumerable<Holding> GetHoldings(int accountId)
+        {
+            return _da.GetHoldings(accountId).ToList();
         }
     }
 }

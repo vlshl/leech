@@ -14,6 +14,7 @@ namespace LeechSvc
         bool AddStopOrder(StopOrder so, DateTime updateTime);
         bool UpdateStopOrder(long stopOrderNo, DateTime? endTime, StopOrderStatus status, DateTime updateTime);
         void Load();
+        IEnumerable<StopOrder> GetStopOrders(int accountId);
     }
 
     public class StopOrderTable : IStopOrderTable
@@ -93,6 +94,11 @@ namespace LeechSvc
                     _id_stoporder.Add(so.StopOrderNo, so);
                 }
             }
+        }
+
+        public IEnumerable<StopOrder> GetStopOrders(int accountId)
+        {
+            return _id_stoporder.Values.Where(r => r.AccountID == accountId).ToList();
         }
     }
 }
