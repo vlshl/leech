@@ -135,6 +135,20 @@ namespace Leech
             }
         }
 
+        /// <summary>
+        /// Последний тик по инструменту
+        /// </summary>
+        /// <param name="insID">Инструмент</param>
+        /// <returns>Если тиков нет, то default(Tick)</returns>
+        public Tick GetLastTick(int insID)
+        {
+            var ticks = GetTickList(insID);
+            lock (ticks)
+            {
+                return ticks.LastOrDefault();
+            }
+        }
+
         private void CreateTickThread(OnTickEH onTick, TickThreadControl ttc)
         {
             Task.Factory.StartNew(() =>

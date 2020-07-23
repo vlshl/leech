@@ -59,6 +59,13 @@ namespace Common
         void AddTick(Tick tick);
 
         /// <summary>
+        /// Последний тик по указанному инструменту (за текущую сессию)
+        /// </summary>
+        /// <param name="insID">Инструмент</param>
+        /// <returns>Если тиков еще нет, то default value</returns>
+        Tick GetLastTick(int insID);
+
+        /// <summary>
         /// Инициализация перед началом торговой сессии.
         /// </summary>
         void Initialize();

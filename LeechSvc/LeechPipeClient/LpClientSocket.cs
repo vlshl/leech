@@ -32,10 +32,8 @@ namespace LeechSvc.LeechPipeClient
             _cts.Cancel();
         }
 
-        public async Task<bool> OpenAsync(string url, string login, string password, string accountCode)
+        public async Task<bool> ConnectAsync(string url, string login, string password, string accountCode)
         {
-            if (_socket != null) return false;
-
             string httpProto = "";
             string wsProto = "";
             string urlBody = "";

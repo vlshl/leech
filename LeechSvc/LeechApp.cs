@@ -68,7 +68,7 @@ namespace LeechSvc
             _logger = logger;
             _dataProtect = IoC.Resolve<DataProtect>();
             _lpClientApp = new LpClientApp(_config, _dataProtect, _accountTable, _instrumTable, _accountTable, _stopOrderTable, _orderTable,
-                _tradeTable, _positionTable, _holdingTable);
+                _tradeTable, _positionTable, _holdingTable, _tickDispatcher);
 
             _allTradesData = new AllTradesData(_instrumTable, _config, _insStoreData, _logger);
             _alorTrade = new AlorTradeWrapper(_instrumTable, _stopOrderTable, _orderTable, _tradeTable, 

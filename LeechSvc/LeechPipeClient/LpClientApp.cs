@@ -1,4 +1,5 @@
-﻿using Common.Data;
+﻿using Common;
+using Common.Data;
 using LeechPipe;
 using System;
 using System.Text;
@@ -20,14 +21,14 @@ namespace LeechSvc.LeechPipeClient
 
         public LpClientApp(ILeechConfig config, DataProtect dataProtect, IAccountTable accTable, IInstrumTable instrumTable, 
             IAccountTable accountTable, IStopOrderTable stopOrderTable, IOrderTable orderTable, ITradeTable tradeTable, 
-            IPositionTable positionTable, IHoldingTable holdingTable)
+            IPositionTable positionTable, IHoldingTable holdingTable, ITickDispatcher tickDisp)
         {
             _config = config;
             _accTable = accTable;
             _dataProtect = dataProtect;
             _socket = new LpClientSocket();
             _core = new LpCore(_socket, false); // клиент
-            _pipeFactory = new LpAppFactory(_core, instrumTable, accountTable, stopOrderTable, orderTable, tradeTable, positionTable, holdingTable);
+            _pipeFactory = new LpAppFactory(_core, instrumTable, accountTable, stopOrderTable, orderTable, tradeTable, positionTable, holdingTable, tickDisp);
             _sysPipe = new SystemLp(_pipeFactory, _core);
         }
 
@@ -39,12 +40,11 @@ namespace LeechSvc.LeechPipeClient
                 {
                     if (!_core.IsWorking)
                     {
-                        await OpenAsync();
+                        await ConnectAsync();
                     }
                     await Task.Delay(PERIOD);
                 }
             });
-
         }
 
         public void Close()
@@ -53,7 +53,7 @@ namespace LeechSvc.LeechPipeClient
             CloseAsync().Wait();
         }
 
-        private async Task<bool> OpenAsync()
+        private async Task<bool> ConnectAsync()
         {
             var acc = _accTable.GetDefaultAccount();
             if (acc == null) return false;
@@ -61,7 +61,7 @@ namespace LeechSvc.LeechPipeClient
             string url; string login; string password;
             _dataProtect.GetPulxerParams(out url, out login, out password);
 
-            bool isSuccess = await _socket.OpenAsync(url, login, password, acc.Code);
+            bool isSuccess = await _socket.ConnectAsync(url, login, password, acc.Code);
             if (!isSuccess) return false;
 
             _core.Initialize(_sysPipe, "Leech App");
