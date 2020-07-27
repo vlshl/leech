@@ -32,7 +32,7 @@ namespace LeechSvc.LeechPipeClient
             _cts.Cancel();
         }
 
-        public async Task<bool> ConnectAsync(string url, string login, string password, string accountCode)
+        public async Task<bool> ConnectAsync(string url, string login, string password)
         {
             string httpProto = "";
             string wsProto = "";
@@ -60,7 +60,7 @@ namespace LeechSvc.LeechPipeClient
             var pairs = new List<KeyValuePair<string, string>>
                 {
                     new KeyValuePair<string, string>("login", login),
-                    new KeyValuePair<string, string> ("password", password)
+                    new KeyValuePair<string, string>("password", password)
                 };
             var content = new FormUrlEncodedContent(pairs);
 
@@ -80,7 +80,7 @@ namespace LeechSvc.LeechPipeClient
             }
 
             _socket = new ClientWebSocket();
-            var uri = new Uri(wsProto + urlBody + "/ws/" + Convert.ToBase64String(Encoding.UTF8.GetBytes(accountCode)));
+            var uri = new Uri(wsProto + urlBody + "/ws");
             _socket.Options.SetRequestHeader("Authorization", "Bearer " + authUser.Token);
             await _socket.ConnectAsync(uri, _cts.Token);
 

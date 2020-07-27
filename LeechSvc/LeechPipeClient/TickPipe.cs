@@ -11,11 +11,13 @@ namespace LeechSvc.LeechPipeClient
     {
         private readonly ILpCore _core;
         private readonly ITickDispatcher _tickDisp;
+        private readonly IInstrumTable _instrumTable;
 
-        public TickPipe(ILpCore core, ITickDispatcher tickDisp)
+        public TickPipe(ILpCore core, ITickDispatcher tickDisp, IInstrumTable instrumTable)
         {
             _core = core;
             _tickDisp = tickDisp;
+            _instrumTable = instrumTable;
         }
 
         public void OnRecv(byte[] data)
@@ -25,20 +27,21 @@ namespace LeechSvc.LeechPipeClient
             string cmd = Encoding.UTF8.GetString(data);
             string[] args = Regex.Split(cmd, @"\s+");
 
-            if (args.Length == 2 && args[0] == "GetLastTicks")
+            if (args.Length == 2 && args[0] == "GetLastPrices")
             {
-                var parts = Regex.Split(args[1], @"\s*,\s*");
-                List<Tick> ticks = new List<Tick>();
-                int id;
-                foreach (var p in parts)
+                var tickers = Regex.Split(args[1], @"\s*,\s*");
+                List<LastPrice> prices = new List<LastPrice>();
+                foreach (var t in tickers)
                 {
-                    if (!int.TryParse(p, out id)) continue;
-                    var tick = _tickDisp.GetLastTick(id);
+                    var instrum = _instrumTable.GetInstrum(t);
+                    if (instrum == null) continue;
+
+                    var tick = _tickDisp.GetLastTick(instrum.InsID);
                     if (tick.InsID == 0) continue; // диспетчер вернул default value структуры Tick, значит тика еще нет
-                    ticks.Add(tick);
+                    prices.Add(new LastPrice(instrum.Ticker, tick.Time, tick.Price, tick.Lots));
                 }
 
-                var json = JsonConvert.SerializeObject(ticks);
+                var json = JsonConvert.SerializeObject(prices);
                 var bytes = Encoding.UTF8.GetBytes(json);
                 _core.SendResponseAsync(this, bytes).Wait();
             }

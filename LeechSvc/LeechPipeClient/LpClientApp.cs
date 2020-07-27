@@ -16,15 +16,13 @@ namespace LeechSvc.LeechPipeClient
         private ILpFactory _pipeFactory;
         private bool _isWorking = true;
         private ILeechConfig _config;
-        private IAccountTable _accTable;
         private DataProtect _dataProtect;
 
-        public LpClientApp(ILeechConfig config, DataProtect dataProtect, IAccountTable accTable, IInstrumTable instrumTable, 
+        public LpClientApp(ILeechConfig config, DataProtect dataProtect, IInstrumTable instrumTable, 
             IAccountTable accountTable, IStopOrderTable stopOrderTable, IOrderTable orderTable, ITradeTable tradeTable, 
             IPositionTable positionTable, IHoldingTable holdingTable, ITickDispatcher tickDisp)
         {
             _config = config;
-            _accTable = accTable;
             _dataProtect = dataProtect;
             _socket = new LpClientSocket();
             _core = new LpCore(_socket, false); // клиент
@@ -55,13 +53,10 @@ namespace LeechSvc.LeechPipeClient
 
         private async Task<bool> ConnectAsync()
         {
-            var acc = _accTable.GetDefaultAccount();
-            if (acc == null) return false;
-
             string url; string login; string password;
             _dataProtect.GetPulxerParams(out url, out login, out password);
 
-            bool isSuccess = await _socket.ConnectAsync(url, login, password, acc.Code);
+            bool isSuccess = await _socket.ConnectAsync(url, login, password);
             if (!isSuccess) return false;
 
             _core.Initialize(_sysPipe, "Leech App");

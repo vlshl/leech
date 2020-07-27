@@ -113,6 +113,7 @@
     <Compile Include="LeechApp.cs" />
     <Compile Include="LeechConfig.cs" />
     <Compile Include="LeechPipeClient\AuthUser.cs" />
+    <Compile Include="LeechPipeClient\LastPrice.cs" />
     <Compile Include="LeechPipeClient\LpAppFactory.cs" />
     <Compile Include="LeechPipeClient\LpClientApp.cs" />
     <Compile Include="LeechPipeClient\LpClientSocket.cs" />

@@ -48,8 +48,7 @@ namespace LeechSvc
 
         public LeechApp(ILeechConfig config, IBotManager botManager, IBotsConfiguration botsConfig, ITickDispatcher tickDisp, IDataStorage dataStorage, 
             IInstrumTable insTable, IStopOrderTable stopOrderTable, IOrderTable orderTable, ITradeTable tradeTable, 
-            IHoldingTable holdingTable, IPositionTable positionTable, IAccountTable accountTable,
-            IInsStoreData insStoreData, ILogger logger)
+            IHoldingTable holdingTable, IPositionTable positionTable, AccountTable accountTable, IInsStoreData insStoreData, ILogger logger)
         {
             _config = config;
             _scheduler = new Scheduler(_config, this, logger);
@@ -67,7 +66,7 @@ namespace LeechSvc
             _insStoreData = insStoreData;
             _logger = logger;
             _dataProtect = IoC.Resolve<DataProtect>();
-            _lpClientApp = new LpClientApp(_config, _dataProtect, _accountTable, _instrumTable, _accountTable, _stopOrderTable, _orderTable,
+            _lpClientApp = new LpClientApp(_config, _dataProtect, _instrumTable, _accountTable, _stopOrderTable, _orderTable,
                 _tradeTable, _positionTable, _holdingTable, _tickDispatcher);
 
             _allTradesData = new AllTradesData(_instrumTable, _config, _insStoreData, _logger);

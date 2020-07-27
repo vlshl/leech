@@ -42,7 +42,7 @@ namespace LeechSvc.LeechPipeClient
             }
             else if (cmd == "tick")
             {
-                return new TickPipe(_core, _tickDisp);
+                return new TickPipe(_core, _tickDisp, _instrumTable);
             }
 
             return null;
