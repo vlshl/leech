@@ -40,6 +40,11 @@ namespace LeechSvc
             _app.Close();
         }
 
+        protected override void OnShutdown()
+        {
+            base.OnShutdown();
+        }
+
         internal void RunInteractive(string[] args)
         {
             if (args.Length == 1)

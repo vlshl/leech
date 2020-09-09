@@ -13,11 +13,11 @@ namespace LeechSvc.LeechPipeClient
         private readonly IStopOrderTable _stopOrderTable;
         private readonly IOrderTable _orderTable;
         private readonly ITradeTable _tradeTable;
-        private readonly IPositionTable _positionTable;
+        private readonly ICashTable _cashTable;
         private readonly IHoldingTable _holdingTable;
 
         public SyncPipe(ILpCore core, IInstrumTable instrumTable, IAccountTable accountTable, IStopOrderTable stopOrderTable, 
-            IOrderTable orderTable, ITradeTable tradeTable, IPositionTable positionTable, IHoldingTable holdingTable)
+            IOrderTable orderTable, ITradeTable tradeTable, ICashTable positionTable, IHoldingTable holdingTable)
         {
             _core = core;
             _instrumTable = instrumTable;
@@ -25,7 +25,7 @@ namespace LeechSvc.LeechPipeClient
             _stopOrderTable = stopOrderTable;
             _orderTable = orderTable;
             _tradeTable = tradeTable;
-            _positionTable = positionTable;
+            _cashTable = positionTable;
             _holdingTable = holdingTable;
         }
 
@@ -99,7 +99,7 @@ namespace LeechSvc.LeechPipeClient
                 int id = GetParam(cmd);
                 if (id > 0)
                 {
-                    var cash = _positionTable.GetCash(id);
+                    var cash = _cashTable.GetCash(id);
                     var json = JsonConvert.SerializeObject(cash);
                     var bytes = Encoding.UTF8.GetBytes(json);
                     _core.SendResponseAsync(this, bytes).Wait();

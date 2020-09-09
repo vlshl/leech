@@ -26,16 +26,18 @@ namespace LeechSvc.BL
         private readonly IRepositoryBL _reposBL = null;
         private readonly IInsStoreBL _insStoreBL = null;
         private readonly ILogger _logger = null;
+        private readonly ILeechConfig _config = null;
         private Timeframes[] _tfs;
         private Dictionary<Common.Data.InsStore, BarRow> _insStore_barRow = null;
         private Dictionary<int, List<BarRow>> _insID_barRows = null;
 
-        public InsStoreData(IInsStoreDA insStoreDA, InsStoreBL insStoreBL, IStorage storage, IRepositoryBL reposBL, ILogger logger)
+        public InsStoreData(IInsStoreDA insStoreDA, InsStoreBL insStoreBL, IStorage storage, IRepositoryBL reposBL, ILeechConfig config, ILogger logger)
         {
             _insStoreDA = insStoreDA;
             _insStoreBL = insStoreBL;
             _storage = storage;
             _reposBL = reposBL;
+            _config = config;
             _logger = logger;
 
             _tfs = new Timeframes[]
@@ -104,21 +106,36 @@ namespace LeechSvc.BL
 
         public void SaveData()
         {
-            DateTime date1;
-            var last = _reposBL.GetIntParam(LAST_HISTORY_DATA);
-            if (last == null) date1 = DateTime.Today; else date1 = StorageLib.ToDateTime(last.Value).AddDays(1);
-            DateTime date2 = DateTime.Today;
+            DateTime firstDate; DateTime lastDate;
 
-            _logger.AddInfo("InsStoreData", string.Format("Save bar data: {0} - {1}", date1.ToString("dd.MM.yyyy"), date2.ToString("dd.MM.yyyy")));
+            var lastHistData = _reposBL.GetIntParam(LAST_HISTORY_DATA);
+            if (lastHistData == null)
+            {
+                firstDate = DateTime.Today.AddHours(_config.CorrectHours).Date;
+            }
+            else
+            {
+                firstDate = StorageLib.ToDateTime(lastHistData.Value).AddDays(1);
+            }
+            lastDate = firstDate;
+
+            _logger.AddInfo("InsStoreData", "Bars saving ...");
+
             bool isNewTran = _storage.BeginTransaction();
             try
             {
                 foreach (var insStore in _insStore_barRow.Keys)
                 {
                     var bars = _insStore_barRow[insStore].Bars;
-                    _insStoreBL.InsertData(insStore.InsStoreID, bars, date1, date2, false, new CancellationToken());
+                    if (!bars.Any()) continue;
+
+                    var lastBarDate = bars.Last().Time.Date;
+                    if (lastBarDate > lastDate) lastDate = lastBarDate;
+
+                    _insStoreBL.InsertData(insStore.InsStoreID, bars, firstDate, lastBarDate, false, new CancellationToken());
                 }
-                _reposBL.SetIntParam(LAST_HISTORY_DATA, StorageLib.ToDbTime(date2));
+
+                _reposBL.SetIntParam(LAST_HISTORY_DATA, StorageLib.ToDbTime(lastDate));
                 _storage.Commit(isNewTran);
             }
             catch (Exception ex)
@@ -126,7 +143,8 @@ namespace LeechSvc.BL
                 _storage.Rollback(isNewTran);
                 _logger.AddException("InsStoreBL:SaveData", ex);
             }
-            _logger.AddInfo("InsStoreData", string.Format("Bar data saved"));
+
+            _logger.AddInfo("InsStoreData", string.Format("Bars saved: {0} - {1}", firstDate.ToString("dd.MM.yyyy"), lastDate.ToString("dd.MM.yyyy")));
         }
         private string LAST_HISTORY_DATA = "LastHistoryData";
     }

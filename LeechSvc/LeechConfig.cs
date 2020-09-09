@@ -9,23 +9,22 @@ namespace LeechSvc
     /// </summary>
     public interface ILeechConfig
     {
-        int GetOpenSessionTime();
-        int GetCloseSessionTime();
-        int GetOpenTerminalTime();
-        int GetConnectTime();
-        int GetDisconnectTime();
-        int GetCloseTerminalTime();
+        int GetOpenSessionLocalTime();
+        int GetCloseSessionLocalTime();
+        int GetOpenTerminalLocalTime();
+        int GetConnectLocalTime();
+        int GetDisconnectLocalTime();
+        int GetCloseTerminalLocalTime();
         string GetRootPath();
         string GetDbPath();
-        string GetTodayDbPath();
-        string GetAllTradesDbPath();
+        string GetSessionDbPath(DateTime sessionDate);
         string GetLogPath();
         string GetBotsConfigPath();
         string GetBotsPath();
         string SecBoard { get; }
         int CorrectHours { get; }
-        TimeSpan StartSessionTime { get; }
-        TimeSpan EndSessionTime { get; }
+        TimeSpan StartSessionMskTime { get; }
+        TimeSpan EndSessionMskTime { get; }
     }
 
     /// <summary>
@@ -45,9 +44,9 @@ namespace LeechSvc
         /// Время инициализации (перед торговой сессией)
         /// </summary>
         /// <returns>ччммсс</returns>
-        public int GetOpenSessionTime()
+        public int GetOpenSessionLocalTime()
         {
-            var ts = Properties.Settings.Default.OpenSessionTime;
+            var ts = Properties.Settings.Default.OpenSessionLocalTime;
             return ts.Hours * 10000 + ts.Minutes * 100 + ts.Seconds;
         }
 
@@ -55,9 +54,9 @@ namespace LeechSvc
         /// Время открытия терминала
         /// </summary>
         /// <returns>ччммсс</returns>
-        public int GetOpenTerminalTime()
+        public int GetOpenTerminalLocalTime()
         {
-            var ts = Properties.Settings.Default.OpenTerminalTime;
+            var ts = Properties.Settings.Default.OpenTerminalLocalTime;
             return ts.Hours * 10000 + ts.Minutes * 100 + ts.Seconds;
         }
 
@@ -65,9 +64,9 @@ namespace LeechSvc
         /// Время установки соединения
         /// </summary>
         /// <returns>ччммсс</returns>
-        public int GetConnectTime()
+        public int GetConnectLocalTime()
         {
-            var ts = Properties.Settings.Default.ConnectTime;
+            var ts = Properties.Settings.Default.ConnectLocalTime;
             return ts.Hours * 10000 + ts.Minutes * 100 + ts.Seconds;
         }
 
@@ -75,9 +74,9 @@ namespace LeechSvc
         /// Время разрыва соединения
         /// </summary>
         /// <returns>ччммсс</returns>
-        public int GetDisconnectTime()
+        public int GetDisconnectLocalTime()
         {
-            var ts = Properties.Settings.Default.DisconnectTime;
+            var ts = Properties.Settings.Default.DisconnectLocalTime;
             return ts.Hours * 10000 + ts.Minutes * 100 + ts.Seconds;
         }
 
@@ -85,9 +84,9 @@ namespace LeechSvc
         /// Время закрытия терминала
         /// </summary>
         /// <returns>ччммсс</returns>
-        public int GetCloseTerminalTime()
+        public int GetCloseTerminalLocalTime()
         {
-            var ts = Properties.Settings.Default.CloseTerminalTime;
+            var ts = Properties.Settings.Default.CloseTerminalLocalTime;
             return ts.Hours * 10000 + ts.Minutes * 100 + ts.Seconds;
         }
 
@@ -95,9 +94,9 @@ namespace LeechSvc
         /// Время завершения (после окончания торговой сессии)
         /// </summary>
         /// <returns>ччммсс</returns>
-        public int GetCloseSessionTime()
+        public int GetCloseSessionLocalTime()
         {
-            var ts = Properties.Settings.Default.CloseSessionTime;
+            var ts = Properties.Settings.Default.CloseSessionLocalTime;
             return ts.Hours * 10000 + ts.Minutes * 100 + ts.Seconds;
         }
 
@@ -127,20 +126,11 @@ namespace LeechSvc
         /// <summary>
         /// Каталог сегодняшних данных
         /// </summary>
+        /// <param name="sessionDate">Текущая дата</param>
         /// <returns></returns>
-        public string GetTodayDbPath()
+        public string GetSessionDbPath(DateTime sessionDate)
         {
-            return Path.Combine(GetDbPath(),
-                DateTime.Today.ToString("yyyy-MM-dd"));
-        }
-
-        /// <summary>
-        /// Каталог данных по всем сделкам
-        /// </summary>
-        /// <returns></returns>
-        public string GetAllTradesDbPath()
-        {
-            return Path.Combine(GetTodayDbPath(), "AllTrades");
+            return Path.Combine(GetDbPath(), sessionDate.ToString("yyyy-MM-dd"));
         }
 
         /// <summary>
@@ -212,22 +202,22 @@ namespace LeechSvc
         /// <summary>
         /// Время начала торговой сессии по часовому поясу биржи
         /// </summary>
-        public TimeSpan StartSessionTime
+        public TimeSpan StartSessionMskTime
         {
             get
             {
-                return Properties.Settings.Default.StartSessionTime;
+                return Properties.Settings.Default.StartSessionMskTime;
             }
         }
 
         /// <summary>
         /// Время окончания торговой сессии по часовому поясу биржи
         /// </summary>
-        public TimeSpan EndSessionTime
+        public TimeSpan EndSessionMskTime
         {
             get
             {
-                return Properties.Settings.Default.EndSessionTime;
+                return Properties.Settings.Default.EndSessionMskTime;
             }
         }
     }

@@ -1,11 +1,8 @@
 ﻿using Common;
 using Common.Data;
 using Common.Interfaces;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LeechSvc
 {
@@ -14,26 +11,20 @@ namespace LeechSvc
         bool AddOrder(Order order);
         bool UpdateOrder(long orderNo, OrderStatus status);
         Order GetOrder(long orderNo);
-        void Load();
         IEnumerable<Order> GetOrders(int accountId);
     }
 
     public class OrderTable : IOrderTable
     {
-        private Dictionary<long, Order> _id_order = null;
         private readonly IAccountDA _da = null;
 
         public OrderTable(IAccountDA da)
         {
             _da = da;
-            _id_order = new Dictionary<long, Order>();
         }
 
         public bool AddOrder(Order order)
         {
-            if (_id_order.ContainsKey(order.OrderNo)) return false;
-            _id_order.Add(order.OrderNo, order);
-
             var db_order = _da.GetOrder(order.OrderNo);
             if (db_order == null)
             {
@@ -50,16 +41,11 @@ namespace LeechSvc
 
         public Order GetOrder(long orderNo)
         {
-            if (!_id_order.ContainsKey(orderNo)) return null;
-            return _id_order[orderNo];
+            return _da.GetOrder(orderNo);
         }
 
         public bool UpdateOrder(long orderNo, OrderStatus status)
         {
-            if (!_id_order.ContainsKey(orderNo)) return false;
-            var so = _id_order[orderNo];
-            so.Status = status;
-
             var db_order = _da.GetOrder(orderNo);
             if (db_order != null)
             {
@@ -70,23 +56,9 @@ namespace LeechSvc
             return true;
         }
 
-        public void Load()
-        {
-            _id_order.Clear();
-            var accounts = _da.GetAccounts();
-            foreach (var acc in accounts)
-            {
-                var orders = _da.GetOrders(acc.AccountID, true);
-                foreach (var ord in orders)
-                {
-                    _id_order.Add(ord.OrderNo, ord);
-                }
-            }
-        }
-
         public IEnumerable<Order> GetOrders(int accountId)
         {
-            return _id_order.Values.Where(r => r.AccountID == accountId).ToList();
+            return _da.GetOrders(accountId, false).ToList();
         }
     }
 }

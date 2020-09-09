@@ -2,10 +2,10 @@
 <SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="LeechSvc.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
-    <Setting Name="StartSessionTime" Type="System.TimeSpan" Scope="Application">
+    <Setting Name="StartSessionMskTime" Type="System.TimeSpan" Scope="Application">
       <Value Profile="(Default)">10:00:00</Value>
     </Setting>
-    <Setting Name="EndSessionTime" Type="System.TimeSpan" Scope="Application">
+    <Setting Name="EndSessionMskTime" Type="System.TimeSpan" Scope="Application">
       <Value Profile="(Default)">18:45:00</Value>
     </Setting>
     <Setting Name="CorrectHours" Type="System.Int32" Scope="Application">
@@ -26,22 +26,22 @@
     <Setting Name="BotsPath" Type="System.String" Scope="Application">
       <Value Profile="(Default)">bots</Value>
     </Setting>
-    <Setting Name="OpenSessionTime" Type="System.TimeSpan" Scope="Application">
+    <Setting Name="OpenSessionLocalTime" Type="System.TimeSpan" Scope="Application">
       <Value Profile="(Default)">10:55:00</Value>
     </Setting>
-    <Setting Name="OpenTerminalTime" Type="System.TimeSpan" Scope="Application">
+    <Setting Name="OpenTerminalLocalTime" Type="System.TimeSpan" Scope="Application">
       <Value Profile="(Default)">10:56:00</Value>
     </Setting>
-    <Setting Name="ConnectTime" Type="System.TimeSpan" Scope="Application">
+    <Setting Name="ConnectLocalTime" Type="System.TimeSpan" Scope="Application">
       <Value Profile="(Default)">10:57:00</Value>
     </Setting>
-    <Setting Name="DisconnectTime" Type="System.TimeSpan" Scope="Application">
+    <Setting Name="DisconnectLocalTime" Type="System.TimeSpan" Scope="Application">
       <Value Profile="(Default)">19:48:00</Value>
     </Setting>
-    <Setting Name="CloseTerminalTime" Type="System.TimeSpan" Scope="Application">
+    <Setting Name="CloseTerminalLocalTime" Type="System.TimeSpan" Scope="Application">
       <Value Profile="(Default)">19:49:00</Value>
     </Setting>
-    <Setting Name="CloseSessionTime" Type="System.TimeSpan" Scope="Application">
+    <Setting Name="CloseSessionLocalTime" Type="System.TimeSpan" Scope="Application">
       <Value Profile="(Default)">19:50:00</Value>
     </Setting>
   </Settings>

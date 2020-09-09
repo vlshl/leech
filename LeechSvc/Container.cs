@@ -56,7 +56,7 @@ namespace Leech
             uc.RegisterType<IOrderTable, OrderTable>(new ContainerControlledLifetimeManager()); // singleton
             uc.RegisterType<ITradeTable, TradeTable>(new ContainerControlledLifetimeManager()); // singleton
             uc.RegisterType<IHoldingTable, HoldingTable>(new ContainerControlledLifetimeManager()); // singleton
-            uc.RegisterType<IPositionTable, PositionTable>(new ContainerControlledLifetimeManager()); // singleton
+            uc.RegisterType<ICashTable, CashTable>(new ContainerControlledLifetimeManager()); // singleton
             uc.RegisterType<IAccountTable, AccountTable>(new ContainerControlledLifetimeManager()); // singleton
             uc.RegisterType<ITickDispatcher, TickDispatcher>(new ContainerControlledLifetimeManager()); // singleton
             uc.RegisterType<IStorage, LeechStorage>(new ContainerControlledLifetimeManager()); // singleton

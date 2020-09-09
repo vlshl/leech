@@ -9,32 +9,26 @@ namespace LeechSvc
     /// </summary>
     public class AllTradesPersist
     {
-        private ILeechConfig _config;
         private FileStream _fs;
 
         /// <summary>
         /// Конструктор
         /// </summary>
-        /// <param name="config">Конфигурация</param>
-        public AllTradesPersist(ILeechConfig config)
+        public AllTradesPersist()
         {
-            if (config == null)
-                throw new ArgumentNullException("config");
-            _config = config;
         }
 
         /// <summary>
         /// Инициализация, создание нового файлового потока по тикеру.
         /// Запись в файловый поток начальных данных (заголовка).
         /// </summary>
+        /// <param name="path">Каталог для сохранения данных за текущую дату</param>
         /// <param name="ticker">Тикер</param>
-        public void Initialize(string ticker)
+        public void Initialize(string path, string ticker)
         {
             const string version = "AllTrades 1.1   "; // header size = 16
 
-            string allTradesDir = _config.GetAllTradesDbPath();
-            string filename = allTradesDir + "\\" + ticker;
-
+            string filename = Path.Combine(path, ticker);
             _fs = File.Create(filename);
             byte[] ver = new ASCIIEncoding().GetBytes(version);
             _fs.Write(ver, 0, ver.Length);

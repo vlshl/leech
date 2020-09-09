@@ -5,6 +5,7 @@ using LeechSvc.BL;
 using LeechSvc.Bots;
 using LeechSvc.LeechPipeClient;
 using LeechSvc.Logger;
+using System;
 using System.IO;
 
 namespace LeechSvc
@@ -40,15 +41,16 @@ namespace LeechSvc
         private readonly ITradeTable _tradeTable = null;
         private readonly IStopOrderTable _stopOrderTable = null;
         private readonly IHoldingTable _holdingTable = null;
-        private readonly IPositionTable _positionTable = null;
+        private readonly ICashTable _cashTable = null;
         private AllTradesData _allTradesData = null;
         private readonly ILogger _logger = null;
         private readonly DataProtect _dataProtect = null;
         private LpClientApp _lpClientApp;
+        private string _sessionDbPath = "";
 
         public LeechApp(ILeechConfig config, IBotManager botManager, IBotsConfiguration botsConfig, ITickDispatcher tickDisp, IDataStorage dataStorage, 
             IInstrumTable insTable, IStopOrderTable stopOrderTable, IOrderTable orderTable, ITradeTable tradeTable, 
-            IHoldingTable holdingTable, IPositionTable positionTable, AccountTable accountTable, IInsStoreData insStoreData, ILogger logger)
+            IHoldingTable holdingTable, ICashTable positionTable, AccountTable accountTable, IInsStoreData insStoreData, ILogger logger)
         {
             _config = config;
             _scheduler = new Scheduler(_config, this, logger);
@@ -62,19 +64,17 @@ namespace LeechSvc
             _tradeTable = tradeTable;
             _stopOrderTable = stopOrderTable;
             _holdingTable = holdingTable;
-            _positionTable = positionTable;
+            _cashTable = positionTable;
             _insStoreData = insStoreData;
             _logger = logger;
             _dataProtect = IoC.Resolve<DataProtect>();
-            _lpClientApp = new LpClientApp(_config, _dataProtect, _instrumTable, _accountTable, _stopOrderTable, _orderTable,
-                _tradeTable, _positionTable, _holdingTable, _tickDispatcher);
+            _lpClientApp = new LpClientApp(_dataProtect, _instrumTable, _accountTable, _stopOrderTable, _orderTable,
+                _tradeTable, _cashTable, _holdingTable, _tickDispatcher, _logger);
 
-            _allTradesData = new AllTradesData(_instrumTable, _config, _insStoreData, _logger);
+            _allTradesData = new AllTradesData(_instrumTable, _insStoreData, _logger);
             _alorTrade = new AlorTradeWrapper(_instrumTable, _stopOrderTable, _orderTable, _tradeTable, 
-                _holdingTable, _positionTable, _accountTable,
+                _holdingTable, _cashTable, _accountTable,
                 _tickDispatcher, _config, _logger);
-
-            //connBroker = new ConnBroker();
         }
 
         /// <summary>
@@ -86,19 +86,15 @@ namespace LeechSvc
 
             _instrumTable.Load();
             _accountTable.Load();
-            _orderTable.Load();
-            _stopOrderTable.Load();
-            _holdingTable.Load();
-            _positionTable.Load();
 
             // создание каталогов
-            if (!Directory.Exists(_config.GetTodayDbPath()))
+            _sessionDbPath = _config.GetSessionDbPath(DateTime.Today);
+            if (!Directory.Exists(_sessionDbPath))
             {
-                Directory.CreateDirectory(_config.GetTodayDbPath());
+                Directory.CreateDirectory(_sessionDbPath);
             }
 
             _tickDispatcher.Initialize();
-            //_insStoreBL.OpenSession();
             _botsConfig.Load();
             _botManager.Initialize();
             _alorTrade.Initialize();
@@ -114,9 +110,8 @@ namespace LeechSvc
             _logger.AddInfo("LeechApp", "Close session ...");
             _botManager.Close();
             _alorTrade.Close();
-            _allTradesData.SaveData(_tickDispatcher);
+            _allTradesData.SaveData(_tickDispatcher, _sessionDbPath);
             _tickDispatcher.Close();
-            //_insStoreBL.CloseSession();
             _logger.AddInfo("LeechApp", "Session closed");
         }
 
@@ -166,12 +161,12 @@ namespace LeechSvc
 
             // создание списка запланированных действий
             _scheduler.ClearAllItems();
-            _scheduler.AddItem(_config.GetOpenSessionTime(), () => { OpenSession(); });
-            _scheduler.AddItem(_config.GetOpenTerminalTime(), () => { OpenTerminal(); });
-            _scheduler.AddItem(_config.GetConnectTime(), () => { Connect(); });
-            _scheduler.AddItem(_config.GetDisconnectTime(), () => { Disconnect(); });
-            _scheduler.AddItem(_config.GetCloseTerminalTime(), () => { CloseTerminal(); });
-            _scheduler.AddItem(_config.GetCloseSessionTime(), () => { CloseSession(); });
+            _scheduler.AddItem(_config.GetOpenSessionLocalTime(), () => { OpenSession(); });
+            _scheduler.AddItem(_config.GetOpenTerminalLocalTime(), () => { OpenTerminal(); });
+            _scheduler.AddItem(_config.GetConnectLocalTime(), () => { Connect(); });
+            _scheduler.AddItem(_config.GetDisconnectLocalTime(), () => { Disconnect(); });
+            _scheduler.AddItem(_config.GetCloseTerminalLocalTime(), () => { CloseTerminal(); });
+            _scheduler.AddItem(_config.GetCloseSessionLocalTime(), () => { CloseSession(); });
             _scheduler.Start(); // запуск планировщика
         }
 

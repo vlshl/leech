@@ -32,11 +32,11 @@ namespace LeechSvc.LeechPipeClient
             _cts.Cancel();
         }
 
-        public async Task<bool> ConnectAsync(string url, string login, string password)
+        public async Task<ConnectResult> ConnectAsync(string url, string login, string password)
         {
-            string httpProto = "";
-            string wsProto = "";
-            string urlBody = "";
+            string httpProto;
+            string wsProto;
+            string urlBody;
             if (url.StartsWith("http://"))
             {
                 httpProto = "http://";
@@ -70,21 +70,30 @@ namespace LeechSvc.LeechPipeClient
                 try
                 {
                     var response = await client.PostAsync(httpProto + urlBody + "/auth", content);
+                    if (!response.IsSuccessStatusCode) return new ConnectResult(false, response.ReasonPhrase);
                     var result = await response.Content.ReadAsStringAsync();
                     authUser = JsonConvert.DeserializeObject<AuthUser>(result);
+                    if (authUser == null) return new ConnectResult(false, "Ошибка аутентификации");
                 }
                 catch (Exception ex)
                 {
-                    return false;
+                    return new ConnectResult(false, ex.Message);
                 }
             }
 
-            _socket = new ClientWebSocket();
-            var uri = new Uri(wsProto + urlBody + "/ws");
-            _socket.Options.SetRequestHeader("Authorization", "Bearer " + authUser.Token);
-            await _socket.ConnectAsync(uri, _cts.Token);
+            try
+            {
+                _socket = new ClientWebSocket();
+                var uri = new Uri(wsProto + urlBody + "/ws");
+                _socket.Options.SetRequestHeader("Authorization", "Bearer " + authUser.Token);
+                await _socket.ConnectAsync(uri, _cts.Token);
+            }
+            catch(Exception ex)
+            {
+                return new ConnectResult(false, ex.Message);
+            }
 
-            return _socket.State == WebSocketState.Open;
+            return new ConnectResult(true);
         }
 
         public async Task<bool> CloseAsync()
@@ -138,6 +147,18 @@ namespace LeechSvc.LeechPipeClient
 
                 offset += count;
             }
+        }
+    }
+
+    public class ConnectResult
+    {
+        public bool IsSuccess { get; private set; }
+        public string Message { get; private set; }
+
+        public ConnectResult(bool isSuccess, string message = "")
+        {
+            IsSuccess = isSuccess;
+            Message = message;
         }
     }
 }

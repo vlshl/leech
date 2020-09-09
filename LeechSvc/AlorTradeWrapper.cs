@@ -26,17 +26,17 @@ namespace LeechSvc
         private IOrderTable _orderTable = null;
         private ITradeTable _tradeTable = null;
         private IHoldingTable _holdingTable = null;
-        private IPositionTable _positionTable = null;
+        private ICashTable _positionTable = null;
         private IAccountTable _accountTable = null;
         private readonly ITickDispatcher _tickDispatcher = null;
         private readonly ILeechConfig _leechConfig = null;
         private readonly ILogger _logger = null;
         private string _secBoard = "";
         private int _addHours = 0;
-        private TimeSpan _startSessionTime, _endSessionTime;
+        private TimeSpan _startSessionMskTime, _endSessionMskTime;
 
         public AlorTradeWrapper(IInstrumTable insTable, IStopOrderTable stopOrderTable, IOrderTable orderTable, 
-            ITradeTable tradeTable, IHoldingTable holdingTable, IPositionTable positionTable, 
+            ITradeTable tradeTable, IHoldingTable holdingTable, ICashTable positionTable, 
             IAccountTable accountTable, ITickDispatcher tickDisp, ILeechConfig config, ILogger logger)
         {
             _instrumTable = insTable;
@@ -51,8 +51,8 @@ namespace LeechSvc
             _logger = logger;
             _secBoard = _leechConfig.SecBoard;
             _addHours = _leechConfig.CorrectHours;
-            _startSessionTime = _leechConfig.StartSessionTime;
-            _endSessionTime = _leechConfig.EndSessionTime;
+            _startSessionMskTime = _leechConfig.StartSessionMskTime;
+            _endSessionMskTime = _leechConfig.EndSessionMskTime;
         }
 
         public void OpenTerminal()
@@ -240,9 +240,9 @@ namespace LeechSvc
 
                 string ticker = Convert.ToString(fields[6]).Trim();
                 long tradeNo = Convert.ToInt64(fields[2]);
-                DateTime time = Convert.ToDateTime(fields[3]).AddHours(_addHours);
-                if (time.TimeOfDay < _startSessionTime) time = new DateTime(time.Year, time.Month, time.Day, _startSessionTime.Hours, _startSessionTime.Minutes, _startSessionTime.Seconds);
-                if (time.TimeOfDay > _endSessionTime) time = new DateTime(time.Year, time.Month, time.Day, _endSessionTime.Hours, _endSessionTime.Minutes, _endSessionTime.Seconds);
+                DateTime msktime = Convert.ToDateTime(fields[3]).AddHours(_addHours);
+                if (msktime.TimeOfDay < _startSessionMskTime) msktime = new DateTime(msktime.Year, msktime.Month, msktime.Day, _startSessionMskTime.Hours, _startSessionMskTime.Minutes, _startSessionMskTime.Seconds);
+                if (msktime.TimeOfDay > _endSessionMskTime) msktime = new DateTime(msktime.Year, msktime.Month, msktime.Day, _endSessionMskTime.Hours, _endSessionMskTime.Minutes, _endSessionMskTime.Seconds);
 
                 int lots = Convert.ToInt32(fields[8]);
                 double price = Convert.ToDouble(fields[9]);
@@ -250,7 +250,7 @@ namespace LeechSvc
                 Common.Data.Instrum ins = _instrumTable.GetInstrum(ticker);
                 if (ins == null) return;
 
-                _tickDispatcher.AddTick(new Tick(tradeNo, time, ins.InsID, lots, (decimal)price));
+                _tickDispatcher.AddTick(new Tick(tradeNo, msktime, ins.InsID, lots, (decimal)price));
             }
             else if (_securities_table != null && OpenID == _securities_table.ID)
             {

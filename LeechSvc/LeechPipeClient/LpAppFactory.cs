@@ -12,12 +12,12 @@ namespace LeechSvc.LeechPipeClient
         private readonly IStopOrderTable _stopOrderTable;
         private readonly IOrderTable _orderTable;
         private readonly ITradeTable _tradeTable;
-        private readonly IPositionTable _positionTable;
+        private readonly ICashTable _positionTable;
         private readonly IHoldingTable _holdingTable;
         private readonly ITickDispatcher _tickDisp;
 
         public LpAppFactory(ILpCore core, IInstrumTable instrumTable, IAccountTable accountTable, IStopOrderTable stopOrderTable,
-            IOrderTable orderTable, ITradeTable tradeTable, IPositionTable positionTable, IHoldingTable holdingTable, ITickDispatcher tickDisp)
+            IOrderTable orderTable, ITradeTable tradeTable, ICashTable positionTable, IHoldingTable holdingTable, ITickDispatcher tickDisp)
         {
             _core = core;
             _instrumTable = instrumTable;

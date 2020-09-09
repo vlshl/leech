@@ -1,6 +1,7 @@
 ﻿using Common;
 using Common.Data;
 using LeechPipe;
+using LeechSvc.Logger;
 using System;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,19 +16,19 @@ namespace LeechSvc.LeechPipeClient
         private SystemLp _sysPipe;
         private ILpFactory _pipeFactory;
         private bool _isWorking = true;
-        private ILeechConfig _config;
         private DataProtect _dataProtect;
+        private ILogger _logger;
 
-        public LpClientApp(ILeechConfig config, DataProtect dataProtect, IInstrumTable instrumTable, 
+        public LpClientApp(DataProtect dataProtect, IInstrumTable instrumTable, 
             IAccountTable accountTable, IStopOrderTable stopOrderTable, IOrderTable orderTable, ITradeTable tradeTable, 
-            IPositionTable positionTable, IHoldingTable holdingTable, ITickDispatcher tickDisp)
+            ICashTable positionTable, IHoldingTable holdingTable, ITickDispatcher tickDisp, ILogger logger)
         {
-            _config = config;
             _dataProtect = dataProtect;
             _socket = new LpClientSocket();
             _core = new LpCore(_socket, false); // клиент
             _pipeFactory = new LpAppFactory(_core, instrumTable, accountTable, stopOrderTable, orderTable, tradeTable, positionTable, holdingTable, tickDisp);
             _sysPipe = new SystemLp(_pipeFactory, _core);
+            _logger = logger;
         }
 
         public void Initialize()
@@ -56,10 +57,16 @@ namespace LeechSvc.LeechPipeClient
             string url; string login; string password;
             _dataProtect.GetPulxerParams(out url, out login, out password);
 
-            bool isSuccess = await _socket.ConnectAsync(url, login, password);
-            if (!isSuccess) return false;
+            var res = await _socket.ConnectAsync(url, login, password);
+            if (!res.IsSuccess)
+            {
+                _logger.AddError("LpClientApp", "Pulxer connection error: " + res.Message);
+                return false;
+            }
 
-            _core.Initialize(_sysPipe, "Leech App");
+            _core.Initialize(_sysPipe, "Leech Agent");
+            _logger.AddInfo("LpClientApp", "Pulxer connection successful.");
+
             return true;
         }
 
