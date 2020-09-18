@@ -196,11 +196,12 @@ namespace Storage
         /// </summary>
         /// <param name="accountID">account Id</param>
         /// <param name="isActiveOnly">true - active orders only, false - all orders</param>
+        /// <param name="idFrom">From orderId</param>
         /// <returns>Orders list</returns>
-        public IEnumerable<CommonData.Order> GetOrders(int accountID, bool isActiveOnly)
+        public IEnumerable<CommonData.Order> GetOrders(int accountID, bool isActiveOnly, int idFrom)
         {
             List<CommonData.Order> orders = new List<CommonData.Order>();
-            var db_allOrders = _da.DbContext.Table<Order>().Where(r => r.AccountID == accountID);
+            var db_allOrders = _da.DbContext.Table<Order>().Where(r => r.AccountID == accountID && r.OrderID >= idFrom);
             List<Order> db_orders;
             if (isActiveOnly)
             {
@@ -230,6 +231,31 @@ namespace Storage
             }
 
             return orders;
+        }
+
+        /// <summary>
+        /// Get Orders list by ids
+        /// </summary>
+        /// <param name="ids">Order ids list</param>
+        /// <returns>Orders list</returns>
+        public IEnumerable<CommonData.Order> GetOrdersByIds(int[] ids)
+        {
+            var db_allOrders = _da.DbContext.Table<Order>().Where(r => ids.Contains(r.OrderID)).ToList();
+
+            return (from ord in db_allOrders
+                    select new CommonData.Order()
+                    {
+                        OrderID = ord.OrderID,
+                        Time = StorageLib.ToDateTime(ord.Time),
+                        InsID = ord.InsID,
+                        BuySell = (BuySell)ord.BuySell,
+                        LotCount = ord.LotCount,
+                        Price = ord.Price,
+                        Status = (OrderStatus)ord.Status,
+                        AccountID = ord.AccountID,
+                        StopOrderID = ord.StopOrderID,
+                        OrderNo = ord.OrderNo
+                    }).ToList();
         }
 
         /// <summary>
@@ -263,12 +289,13 @@ namespace Storage
         /// </summary>
         /// <param name="accountID">account Id</param>
         /// <param name="isActiveOnly">true - active stop orders only, false - all stop orders</param>
+        /// <param name="idFrom">From StopOrderID</param>
         /// <returns>StopOrders list</returns>
-        public IEnumerable<CommonData.StopOrder> GetStopOrders(int accountID, bool isActiveOnly)
+        public IEnumerable<CommonData.StopOrder> GetStopOrders(int accountID, bool isActiveOnly, int idFrom)
         {
             List<CommonData.StopOrder> stopOrders = new List<CommonData.StopOrder>();
 
-            var db_allStopOrders = _da.DbContext.Table<StopOrder>().Where(r => r.AccountID == accountID);
+            var db_allStopOrders = _da.DbContext.Table<StopOrder>().Where(r => r.AccountID == accountID && r.StopOrderID >= idFrom);
             List<StopOrder> db_stopOrders;
             if (isActiveOnly)
             {
@@ -304,6 +331,34 @@ namespace Storage
         }
 
         /// <summary>
+        /// Get StopOrders list
+        /// </summary>
+        /// <param name="ids">StopOrderId list</param>
+        /// <returns>StopOrders list</returns>
+        public IEnumerable<CommonData.StopOrder> GetStopOrdersByIds(int[] ids)
+        {
+            var db_stopOrders = _da.DbContext.Table<StopOrder>().Where(r => ids.Contains(r.StopOrderID)).ToList();
+
+            return (from ord in db_stopOrders
+                    select new CommonData.StopOrder()
+                    {
+                        StopOrderID = ord.StopOrderID,
+                        Time = StorageLib.ToDateTime(ord.Time),
+                        InsID = ord.InsID,
+                        BuySell = (BuySell)ord.BuySell,
+                        StopType = (StopOrderType)ord.StopType,
+                        EndTime = StorageLib.ToDateTime(ord.EndTime),
+                        AlertPrice = ord.AlertPrice,
+                        Price = ord.Price,
+                        LotCount = ord.LotCount,
+                        Status = (StopOrderStatus)ord.Status,
+                        AccountID = ord.AccountID,
+                        CompleteTime = StorageLib.ToDateTime(ord.CompleteTime),
+                        StopOrderNo = ord.StopOrderNo
+                    }).ToList();
+        }
+
+        /// <summary>
         /// Get stopOrder by stopOrderNo
         /// </summary>
         /// <param name="stopOrderNo">StopOrderNo</param>
@@ -332,16 +387,18 @@ namespace Storage
         }
 
         /// <summary>
-        /// Get trades list by account Id
+        /// Get Trades by account, date and id.
         /// </summary>
-        /// <param name="accountID">Account Id</param>
-        /// <returns>Trades list</returns>
-        public IEnumerable<CommonData.Trade> GetTrades(int accountID, DateTime? dateFrom)
+        /// <param name="accountID">Account</param>
+        /// <param name="dateFrom">From date-time (or null)</param>
+        /// <param name="idFrom">From tradeId (or zero)</param>
+        /// <returns>Trade list</returns>
+        public IEnumerable<CommonData.Trade> GetTrades(int accountID, DateTime? dateFrom, int idFrom)
         {
             List<CommonData.Trade> trades = new List<CommonData.Trade>();
 
             List<Trade> db_trades;
-            var db_alltrades = _da.DbContext.Table<Trade>().Where(r => r.AccountID == accountID);
+            var db_alltrades = _da.DbContext.Table<Trade>().Where(r => r.AccountID == accountID && r.TradeID >= idFrom);
             if (dateFrom != null)
             {
                 int df = StorageLib.ToDbTime(dateFrom.Value);

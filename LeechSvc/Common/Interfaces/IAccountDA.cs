@@ -14,11 +14,13 @@ namespace Common.Interfaces
         IEnumerable<CommonData.Cash> GetCashes(int accountID);
         IEnumerable<CommonData.Cashflow> GetCashflows(int accountID);
         IEnumerable<CommonData.Holding> GetHoldings(int accountID);
-        IEnumerable<CommonData.Order> GetOrders(int accountID, bool isActiveOnly);
+        IEnumerable<CommonData.Order> GetOrders(int accountID, bool isActiveOnly, int idFrom);
+        IEnumerable<CommonData.Order> GetOrdersByIds(int[] ids);
         CommonData.Order GetOrder(long orderNo);
-        IEnumerable<CommonData.StopOrder> GetStopOrders(int accountID, bool isActiveOnly);
+        IEnumerable<CommonData.StopOrder> GetStopOrders(int accountID, bool isActiveOnly, int idFrom);
+        IEnumerable<CommonData.StopOrder> GetStopOrdersByIds(int[] ids);
         CommonData.StopOrder GetStopOrder(long stopOrderNo);
-        IEnumerable<CommonData.Trade> GetTrades(int accountID, DateTime? dateFrom);
+        IEnumerable<CommonData.Trade> GetTrades(int accountID, DateTime? dateFrom, int idFrom);
         int InsertAccount(CommonData.Account account);
         void UpdateAccount(CommonData.Account account);
         int InsertCash(CommonData.Cash cash);

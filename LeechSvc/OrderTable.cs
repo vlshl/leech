@@ -11,7 +11,8 @@ namespace LeechSvc
         bool AddOrder(Order order);
         bool UpdateOrder(long orderNo, OrderStatus status);
         Order GetOrder(long orderNo);
-        IEnumerable<Order> GetOrders(int accountId);
+        IEnumerable<Order> GetOrders(int accountId, int idFrom);
+        IEnumerable<Order> GetOrdersByIds(int[] ids);
     }
 
     public class OrderTable : IOrderTable
@@ -56,9 +57,14 @@ namespace LeechSvc
             return true;
         }
 
-        public IEnumerable<Order> GetOrders(int accountId)
+        public IEnumerable<Order> GetOrders(int accountId, int idFrom)
         {
-            return _da.GetOrders(accountId, false).ToList();
+            return _da.GetOrders(accountId, false, idFrom).ToList();
+        }
+
+        public IEnumerable<Order> GetOrdersByIds(int[] ids)
+        {
+            return _da.GetOrdersByIds(ids).ToList();
         }
     }
 }

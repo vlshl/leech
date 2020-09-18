@@ -1,5 +1,6 @@
 ﻿using LeechPipe;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -33,7 +34,20 @@ namespace LeechSvc.LeechPipeClient
         {
             if (data == null) return;
 
-            string cmd = Encoding.UTF8.GetString(data);
+            string str;
+            int[] ids;
+
+            try
+            {
+                str = Encoding.UTF8.GetString(data);
+            }
+            catch
+            {
+                return;
+            }
+
+            string cmd = CmdParse(str, out ids);
+            if (string.IsNullOrEmpty(cmd)) return;
 
             if (cmd == "GetInstrumList")
             {
@@ -49,12 +63,11 @@ namespace LeechSvc.LeechPipeClient
                 var bytes = Encoding.UTF8.GetBytes(json);
                 _core.SendResponseAsync(this, bytes).Wait();
             }
-            else if (cmd.StartsWith("GetStopOrderList"))
+            else if (cmd == "GetStopOrders")
             {
-                int id = GetParam(cmd);
-                if (id > 0)
+                if (ids.Length == 2)
                 {
-                    var list = _stopOrderTable.GetStopOrders(id);
+                    var list = _stopOrderTable.GetStopOrders(ids[0], ids[1]);
                     var json = JsonConvert.SerializeObject(list);
                     var bytes = Encoding.UTF8.GetBytes(json);
                     _core.SendResponseAsync(this, bytes).Wait();
@@ -64,12 +77,11 @@ namespace LeechSvc.LeechPipeClient
                     _core.SendResponseAsync(this, null).Wait();
                 }
             }
-            else if (cmd.StartsWith("GetOrderList"))
+            else if (cmd == "GetStopOrdersByIds")
             {
-                int id = GetParam(cmd);
-                if (id > 0)
+                if (ids.Length > 0)
                 {
-                    var list = _orderTable.GetOrders(id);
+                    var list = _stopOrderTable.GetStopOrdersByIds(ids);
                     var json = JsonConvert.SerializeObject(list);
                     var bytes = Encoding.UTF8.GetBytes(json);
                     _core.SendResponseAsync(this, bytes).Wait();
@@ -79,12 +91,11 @@ namespace LeechSvc.LeechPipeClient
                     _core.SendResponseAsync(this, null).Wait();
                 }
             }
-            else if (cmd.StartsWith("GetTradeList"))
+            else if (cmd == "GetOrders")
             {
-                int id = GetParam(cmd);
-                if (id > 0)
+                if (ids.Length == 2)
                 {
-                    var list = _tradeTable.GetTrades(id);
+                    var list = _orderTable.GetOrders(ids[0], ids[1]);
                     var json = JsonConvert.SerializeObject(list);
                     var bytes = Encoding.UTF8.GetBytes(json);
                     _core.SendResponseAsync(this, bytes).Wait();
@@ -94,12 +105,39 @@ namespace LeechSvc.LeechPipeClient
                     _core.SendResponseAsync(this, null).Wait();
                 }
             }
-            else if (cmd.StartsWith("GetCash"))
+            else if (cmd == "GetOrdersByIds")
             {
-                int id = GetParam(cmd);
-                if (id > 0)
+                if (ids.Length > 0)
                 {
-                    var cash = _cashTable.GetCash(id);
+                    var list = _orderTable.GetOrdersByIds(ids);
+                    var json = JsonConvert.SerializeObject(list);
+                    var bytes = Encoding.UTF8.GetBytes(json);
+                    _core.SendResponseAsync(this, bytes).Wait();
+                }
+                else
+                {
+                    _core.SendResponseAsync(this, null).Wait();
+                }
+            }
+            else if (cmd == "GetTrades") // GetTrades accountId fromId
+            {
+                if (ids.Length == 2)
+                {
+                    var list = _tradeTable.GetTrades(ids[0], ids[1]);
+                    var json = JsonConvert.SerializeObject(list);
+                    var bytes = Encoding.UTF8.GetBytes(json);
+                    _core.SendResponseAsync(this, bytes).Wait();
+                }
+                else
+                {
+                    _core.SendResponseAsync(this, null).Wait();
+                }
+            }
+            else if (cmd == "GetCash")
+            {
+                if (ids.Length == 1)
+                {
+                    var cash = _cashTable.GetCash(ids[0]);
                     var json = JsonConvert.SerializeObject(cash);
                     var bytes = Encoding.UTF8.GetBytes(json);
                     _core.SendResponseAsync(this, bytes).Wait();
@@ -109,12 +147,11 @@ namespace LeechSvc.LeechPipeClient
                     _core.SendResponseAsync(this, null).Wait();
                 }
             }
-            else if (cmd.StartsWith("GetHoldingList"))
+            else if (cmd == "GetHoldingList")
             {
-                int id = GetParam(cmd);
-                if (id > 0)
+                if (ids.Length == 1)
                 {
-                    var list = _holdingTable.GetHoldings(id);
+                    var list = _holdingTable.GetHoldings(ids[0]);
                     var json = JsonConvert.SerializeObject(list);
                     var bytes = Encoding.UTF8.GetBytes(json);
                     _core.SendResponseAsync(this, bytes).Wait();
@@ -130,14 +167,25 @@ namespace LeechSvc.LeechPipeClient
             }
         }
 
-        private int GetParam(string cmd)
+        private string CmdParse(string str, out int[] ids)
         {
-            string[] parts = Regex.Split(cmd, @"\s+");
-            if (parts.Length < 2) return 0;
+            ids = new int[] { };
+            if (string.IsNullOrWhiteSpace(str)) return "";
+
+            string[] parts = Regex.Split(str, @"\s+");
+            if (parts.Length < 1) return "";
+            if (parts.Length == 1) return parts[0];
+
+            List<int> idList = new List<int>();
             int id;
-            if (!int.TryParse(parts[1], out id)) return 0;
-            
-            return id;
+            for (int i = 1; i < parts.Length; i++)
+            {
+                if (!int.TryParse(parts[i], out id)) continue;
+                idList.Add(id);
+            }
+            ids = idList.ToArray();
+
+            return parts[0];
         }
     }
 }

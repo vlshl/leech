@@ -8,7 +8,7 @@ namespace LeechSvc
     public interface ITradeTable
     {
         bool AddTrade(Trade trade);
-        IEnumerable<Trade> GetTrades(int accountId);
+        IEnumerable<Trade> GetTrades(int accountId, int idFrom);
     }
 
     public class TradeTable : ITradeTable
@@ -22,7 +22,7 @@ namespace LeechSvc
 
         public bool AddTrade(Trade trade)
         {
-            var db_trade = _da.GetTrades(trade.AccountID, trade.Time.Date)
+            var db_trade = _da.GetTrades(trade.AccountID, trade.Time.Date, 0)
                 .FirstOrDefault(t => t.TradeNo == trade.TradeNo);
             if (db_trade == null)
             {
@@ -32,9 +32,9 @@ namespace LeechSvc
             return true;
         }
 
-        public IEnumerable<Trade> GetTrades(int accountId)
+        public IEnumerable<Trade> GetTrades(int accountId, int idFrom)
         {
-            return _da.GetTrades(accountId, null).ToList();
+            return _da.GetTrades(accountId, null, idFrom).ToList();
         }
     }
 }
