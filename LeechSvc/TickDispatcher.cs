@@ -149,6 +149,21 @@ namespace Leech
             }
         }
 
+        /// <summary>
+        /// Список тиков начиная с указанного и до последнего (на данный момент)
+        /// </summary>
+        /// <param name="insID">Инструмент</param>
+        /// <param name="skip">Сколько тиков пропустить в начале</param>
+        /// <returns></returns>
+        public Tick[] GetLastTicks(int insID, int skip)
+        {
+            var ticks = GetTickList(insID);
+            lock (ticks)
+            {
+                return ticks.Skip(skip).ToArray();
+            }
+        }
+
         private void CreateTickThread(OnTickEH onTick, TickThreadControl ttc)
         {
             Task.Factory.StartNew(() =>
