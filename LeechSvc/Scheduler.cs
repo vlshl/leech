@@ -15,15 +15,11 @@ namespace LeechSvc
     public class Scheduler
     {
         private bool _isWorking = false;
-        private readonly ILeechConfig _config = null;
-        private readonly ILeechApp _app = null;
         private readonly ILogger _logger = null;
         private Dictionary<int, Action> _time_action = null;
 
-        public Scheduler(ILeechConfig config, ILeechApp app, ILogger logger)
+        public Scheduler(ILogger logger)
         {
-            _config = config ?? throw new ArgumentNullException("config");
-            _app = app ?? throw new ArgumentNullException("app");
             _logger = logger ?? throw new ArgumentNullException("logger");
             _time_action = new Dictionary<int, Action>();
         }

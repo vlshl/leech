@@ -53,7 +53,7 @@ namespace LeechSvc
             IHoldingTable holdingTable, ICashTable positionTable, AccountTable accountTable, IInsStoreData insStoreData, ILogger logger)
         {
             _config = config;
-            _scheduler = new Scheduler(_config, this, logger);
+            _scheduler = new Scheduler(logger);
             _botsConfig = botsConfig;
             _tickDispatcher = tickDisp;
             _botManager = botManager;
