@@ -111,7 +111,6 @@ namespace LeechSvc
             _botManager.Close();
             _alorTrade.Close();
             _allTradesData.SaveData(_tickDispatcher, _sessionDbPath);
-            _tickDispatcher.Close();
             _logger.AddInfo("LeechApp", "Session closed");
         }
 

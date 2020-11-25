@@ -40,20 +40,9 @@ namespace Leech
         public void Initialize()
         {
             _logger.AddInfo("TickDispatcher", "Initialize ...");
-            _ttcs.Clear();
-            _insID_ticks.Clear();
-            _logger.AddInfo("TickDispatcher", "Initialized");
-        }
-
-        /// <summary>
-        /// Завершение и очистка после окончания торговой сессии
-        /// </summary>
-        public void Close()
-        {
-            _logger.AddInfo("TickDispatcher", "Close ...");
             UnsubscribeAll();
             _insID_ticks.Clear();
-            _logger.AddInfo("TickDispatcher", "Closed");
+            _logger.AddInfo("TickDispatcher", "Initialized");
         }
 
         /// <summary>

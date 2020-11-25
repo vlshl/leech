@@ -71,11 +71,6 @@ namespace Common
         void Initialize();
 
         /// <summary>
-        /// Завершение после окончания торговой сессии.
-        /// </summary>
-        void Close();
-
-        /// <summary>
         /// Список фин инструментов, для которых есть накопленные данные
         /// </summary>
         IEnumerable<int> GetInstrumIDs();
