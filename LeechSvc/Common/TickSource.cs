@@ -66,6 +66,12 @@ namespace Common
         Tick GetLastTick(int insID);
 
         /// <summary>
+        /// Последний тик за текущую сессию
+        /// </summary>
+        /// <returns>Если тиков еще нет, то default value</returns>
+        Tick GetLastTick();
+
+        /// <summary>
         /// Инициализация перед началом торговой сессии.
         /// </summary>
         void Initialize();

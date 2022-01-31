@@ -1,15 +1,14 @@
-﻿using System;
+﻿using LeechSvc;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Common
 {
-    public delegate void OnBarEventHandler(int index);
-
     /// <summary>
     /// The notifying price bar list
     /// </summary>
-    public class BarRow
+    public class BarRow : IBarRow
     {
         /// <summary>
         /// Close bar event raise when AddTick() added the first tick of the next bar.

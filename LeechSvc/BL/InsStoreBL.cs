@@ -6,12 +6,14 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using CommonData = Common.Data;
 
 namespace LeechSvc.BL
 {
     public interface IInsStoreBL
     {
         void InsertData(int insStoreID, IEnumerable<Bar> bars, DateTime date1, DateTime date2, bool isLastDirty, CancellationToken cancel);
+        Task<int> LoadHistoryAsync(BarRow bars, int insID, DateTime date1, DateTime date2, int? insStoreID = null);
     }
 
     public class InsStoreBL : IInsStoreBL
@@ -38,6 +40,172 @@ namespace LeechSvc.BL
             _insStoreDA.UpdatePeriods(insStoreID, calendar.Periods);
             _insStoreDA.UpdateFreeDays(insStoreID, calendar.FreeDays);
         }
+
+        public async Task<int> LoadHistoryAsync(BarRow bars, int insID, DateTime date1, DateTime date2, int? insStoreID = null)
+        {
+            if (insStoreID != null)
+            {
+                await _insStoreDA.LoadHistoryAsync(bars, insStoreID.Value, date1, date2);
+                return bars.Count;
+            }
+            else
+            {
+                var ss = GetLoadHistoryInsStore(insID, bars.Timeframe);
+                if (ss == null) return 0;
+
+                await _insStoreDA.LoadHistoryAsync(bars, ss.InsStoreID, date1, date2);
+                return bars.Count;
+            }
+        }
+
+        /// <summary>
+        /// Получить наиболее подходящий InsStore
+        /// </summary>
+        /// <param name="insId"></param>
+        /// <param name="tf"></param>
+        /// <returns></returns>
+        private CommonData.InsStore GetLoadHistoryInsStore(int insId, Timeframes tf)
+        {
+            CommonData.InsStore ss = null;
+            var insStores = _insStoreDA.GetInsStores(insId);
+
+            if (tf == Timeframes.Tick)
+            {
+                ss = insStores.FirstOrDefault(s => s.Tf == Timeframes.Tick);
+            }
+
+            if (tf == Timeframes.Min)
+            {
+                ss = insStores.FirstOrDefault(s => s.Tf == Timeframes.Min);
+                if (ss == null)
+                    ss = insStores.FirstOrDefault(s => s.Tf == Timeframes.Tick);
+            }
+
+            if (tf == Timeframes.Min5)
+            {
+                ss = insStores.FirstOrDefault(s => s.Tf == Timeframes.Min5);
+                if (ss == null)
+                    ss = insStores.FirstOrDefault(s => s.Tf == Timeframes.Min);
+                if (ss == null)
+                    ss = insStores.FirstOrDefault(s => s.Tf == Timeframes.Tick);
+            }
+
+            if (tf == Timeframes.Min10)
+            {
+                ss = insStores.FirstOrDefault(s => s.Tf == Timeframes.Min10);
+                if (ss == null)
+                    ss = insStores.FirstOrDefault(s => s.Tf == Timeframes.Min5);
+                if (ss == null)
+                    ss = insStores.FirstOrDefault(s => s.Tf == Timeframes.Min);
+                if (ss == null)
+                    ss = insStores.FirstOrDefault(s => s.Tf == Timeframes.Tick);
+            }
+
+            if (tf == Timeframes.Min15)
+            {
+                ss = insStores.FirstOrDefault(s => s.Tf == Timeframes.Min15);
+                if (ss == null)
+                    ss = insStores.FirstOrDefault(s => s.Tf == Timeframes.Min5);
+                if (ss == null)
+                    ss = insStores.FirstOrDefault(s => s.Tf == Timeframes.Min);
+                if (ss == null)
+                    ss = insStores.FirstOrDefault(s => s.Tf == Timeframes.Tick);
+            }
+
+            if (tf == Timeframes.Min20)
+            {
+                ss = insStores.FirstOrDefault(s => s.Tf == Timeframes.Min20);
+                if (ss == null)
+                    ss = insStores.FirstOrDefault(s => s.Tf == Timeframes.Min10);
+                if (ss == null)
+                    ss = insStores.FirstOrDefault(s => s.Tf == Timeframes.Min5);
+                if (ss == null)
+                    ss = insStores.FirstOrDefault(s => s.Tf == Timeframes.Min);
+                if (ss == null)
+                    ss = insStores.FirstOrDefault(s => s.Tf == Timeframes.Tick);
+            }
+
+            if (tf == Timeframes.Min30)
+            {
+                ss = insStores.FirstOrDefault(s => s.Tf == Timeframes.Min30);
+                if (ss == null)
+                    ss = insStores.FirstOrDefault(s => s.Tf == Timeframes.Min15);
+                if (ss == null)
+                    ss = insStores.FirstOrDefault(s => s.Tf == Timeframes.Min10);
+                if (ss == null)
+                    ss = insStores.FirstOrDefault(s => s.Tf == Timeframes.Min5);
+                if (ss == null)
+                    ss = insStores.FirstOrDefault(s => s.Tf == Timeframes.Min);
+                if (ss == null)
+                    ss = insStores.FirstOrDefault(s => s.Tf == Timeframes.Tick);
+            }
+
+            if (tf == Timeframes.Hour)
+            {
+                ss = insStores.FirstOrDefault(s => s.Tf == Timeframes.Hour);
+                if (ss == null)
+                    ss = insStores.FirstOrDefault(s => s.Tf == Timeframes.Min30);
+                if (ss == null)
+                    ss = insStores.FirstOrDefault(s => s.Tf == Timeframes.Min20);
+                if (ss == null)
+                    ss = insStores.FirstOrDefault(s => s.Tf == Timeframes.Min15);
+                if (ss == null)
+                    ss = insStores.FirstOrDefault(s => s.Tf == Timeframes.Min10);
+                if (ss == null)
+                    ss = insStores.FirstOrDefault(s => s.Tf == Timeframes.Min5);
+                if (ss == null)
+                    ss = insStores.FirstOrDefault(s => s.Tf == Timeframes.Min);
+                if (ss == null)
+                    ss = insStores.FirstOrDefault(s => s.Tf == Timeframes.Tick);
+            }
+
+            if (tf == Timeframes.Day)
+            {
+                ss = insStores.FirstOrDefault(s => s.Tf == Timeframes.Day);
+                if (ss == null)
+                    ss = insStores.FirstOrDefault(s => s.Tf == Timeframes.Hour);
+                if (ss == null)
+                    ss = insStores.FirstOrDefault(s => s.Tf == Timeframes.Min30);
+                if (ss == null)
+                    ss = insStores.FirstOrDefault(s => s.Tf == Timeframes.Min20);
+                if (ss == null)
+                    ss = insStores.FirstOrDefault(s => s.Tf == Timeframes.Min15);
+                if (ss == null)
+                    ss = insStores.FirstOrDefault(s => s.Tf == Timeframes.Min10);
+                if (ss == null)
+                    ss = insStores.FirstOrDefault(s => s.Tf == Timeframes.Min5);
+                if (ss == null)
+                    ss = insStores.FirstOrDefault(s => s.Tf == Timeframes.Min);
+                if (ss == null)
+                    ss = insStores.FirstOrDefault(s => s.Tf == Timeframes.Tick);
+            }
+
+            if (tf == Timeframes.Week)
+            {
+                ss = insStores.FirstOrDefault(s => s.Tf == Timeframes.Week);
+                if (ss == null)
+                    ss = insStores.FirstOrDefault(s => s.Tf == Timeframes.Day);
+                if (ss == null)
+                    ss = insStores.FirstOrDefault(s => s.Tf == Timeframes.Hour);
+                if (ss == null)
+                    ss = insStores.FirstOrDefault(s => s.Tf == Timeframes.Min30);
+                if (ss == null)
+                    ss = insStores.FirstOrDefault(s => s.Tf == Timeframes.Min20);
+                if (ss == null)
+                    ss = insStores.FirstOrDefault(s => s.Tf == Timeframes.Min15);
+                if (ss == null)
+                    ss = insStores.FirstOrDefault(s => s.Tf == Timeframes.Min10);
+                if (ss == null)
+                    ss = insStores.FirstOrDefault(s => s.Tf == Timeframes.Min5);
+                if (ss == null)
+                    ss = insStores.FirstOrDefault(s => s.Tf == Timeframes.Min);
+                if (ss == null)
+                    ss = insStores.FirstOrDefault(s => s.Tf == Timeframes.Tick);
+            }
+
+            return ss;
+        }
+
 
         private InsStoreCalendar GetInsStoreCalendar(int insStoreID)
         {

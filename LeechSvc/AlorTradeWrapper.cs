@@ -500,5 +500,97 @@ namespace LeechSvc
             var now = DateTime.Now.AddHours(_addHours);
             return new DateTime(now.Year, now.Month, now.Day, now.Hour, now.Minute, now.Second);
         }
+
+        /// <summary>
+        /// Обычная заявка
+        /// </summary>
+        /// <param name="ticker">тикер</param>
+        /// <param name="bs">Покупка или продажа</param>
+        /// <param name="price">цена (null - рыночная)</param>
+        /// <param name="lots">размер в лотах</param>
+        /// <param name="account">торговый счет</param>
+        /// <returns>OrderNo</returns>
+        public long AddOrder(string ticker, BuySell bs, decimal? price, int lots, string account)
+        {
+            SfxOrder order = new SfxOrder();
+            order.SlotID = 0;
+            order.OrderMode = "N"; // обычная заявка
+            order.BuySell = bs == BuySell.Buy ? "B" : "S"; // покупка или продажа
+            order.MktLimit = "L"; // лимитированная (M - рыночная)
+            order.SplitFlag = "S"; // по разным ценам (O - по одной цене)
+            order.ImmCancel = " "; // поставить в очередь
+            order.Account = account; // счет (из таблицы TRDACC)
+            order.SecBoard = _secBoard; // режим торгов
+            order.SecCode = ticker; // инструмент
+            order.Quantity = lots; // кол-во лотов
+            order.EnterType = "P"; // цена
+            if (price.HasValue) order.Price = Convert.ToDouble(price.Value); // цена
+            order.BrokerRef = _slot.BrokerRef;
+
+            long orderNo; string resMsg;
+            int res = order.Add(out orderNo, out resMsg);
+            _logger.AddInfo("AlorTradeWrapper", "AddOrder res=" + res.ToString() + " resMsg='" + resMsg + "' orderNo=" + orderNo.ToString() + " bs="
+                + bs.ToString() + " ticker=" + ticker + " lots=" + lots.ToString()
+                + " price=" + (price.HasValue ? price.Value.ToString() : ""));
+
+            return res != (int)SFE.SFE_OK ? 0 : orderNo;
+        }
+
+        /// <summary>
+        /// Стоп-заявка
+        /// </summary>
+        /// <param name="ticker">тикер</param>
+        /// <param name="bs">Покупка или продажа</param>
+        /// <param name="st">Тип стоп-заявки - стоп-лосс или тейк-профит</param>
+        /// <param name="alertPrice">цена срабатываная</param>
+        /// <param name="lots">кол-во лотов</param>
+        /// <param name="endTime">дата окончания</param>
+        /// <param name="account">торговый счет</param>
+        /// <returns>OrderNo</returns>
+        public long AddStopOrder(string ticker, BuySell bs, StopOrderType st, decimal alertPrice, int lots, DateTime endTime, string account)
+        {
+            SfxOrder order = new SfxOrder();
+            order.SlotID = 0;
+            order.OrderMode = "S"; // стоп-заявка
+            order.BuySell = bs == BuySell.Buy ? "B" : "S"; // покупка или продажа
+            order.MktLimit = "M"; // рыночная
+            order.SplitFlag = "S"; // по разным ценам
+            order.ImmCancel = " "; // поставить в очередь
+            order.Account = account; // счет (из таблицы TRDACC)
+            order.SecBoard = _secBoard; // режим торгов
+            order.SecCode = ticker; // инструмент
+            order.Quantity = lots; // кол-во лотов
+            order.StopType = st == StopOrderType.StopLoss ? "L" : "P"; // тип stoploss или takeprofit
+            order.AlertPrice = Convert.ToDouble(alertPrice); // цена
+            order.EndTime = endTime;
+            order.BrokerRef = _slot.BrokerRef;
+
+            long orderNo; string resMsg;
+            int res = order.Add(out orderNo, out resMsg);
+            _logger.AddInfo("AlorTradeWrapper", "AddStopOrder res=" + res.ToString() + " resMsg='" + resMsg + "' orderNo=" + orderNo.ToString() + " bs="
+                + bs.ToString() + " st=" + st.ToString() + " ticker=" + ticker + " lots=" + lots.ToString() + " price=" + alertPrice.ToString());
+
+            return res != (int)SFE.SFE_OK ? 0 : orderNo;
+        }
+
+        /// <summary>
+        /// Удаление заявки или стоп-заявки
+        /// </summary>
+        /// <param name="orderNo">номер</param>
+        /// <param name="isStopOrder">true-стоп заявка, false-обычная заявка</param>
+        /// <returns>true-успешно</returns>
+        public bool DeleteOrder(long orderNo, bool isStopOrder = false)
+        {
+            SfxOrder order = new SfxOrder();
+            order.SlotID = 0;
+            order.OrderMode = isStopOrder ? "S" : "N";
+            order.OrderNo = orderNo;
+
+            string resMsg;
+            int res = order.Delete(out resMsg);
+            _logger.AddInfo("AlorTrade", "DeleteOrder res=" + res.ToString() + " resMsg='" + resMsg + "' orderNo=" + orderNo.ToString() + " isStopOrder=" + isStopOrder.ToString());
+
+            return res == (int)SFE.SFE_OK;
+        }
     }
 }

@@ -1,9 +1,11 @@
-﻿namespace Common.Data
+﻿using LeechSvc;
+
+namespace Common.Data
 {
     /// <summary>
     /// Financial instrument
     /// </summary>
-    public class Instrum
+    public class Instrum : IInstrum
     {
         public Instrum()
         {

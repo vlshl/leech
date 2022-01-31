@@ -23,6 +23,7 @@ namespace Leech
         private List<TickThreadControl> _ttcs = null;
         private Dictionary<int, List<Tick>> _insID_ticks;
         private readonly ILogger _logger = null;
+        private Tick _lastTick = default;
 
         /// <summary>
         /// Конструктор
@@ -112,6 +113,11 @@ namespace Leech
         /// <param name="tick">Информация по сделке</param>
         public void AddTick(Tick tick)
         {
+            lock(this)
+            {
+                _lastTick = tick;
+            }
+
             var ticks = GetTickList(tick.InsID);
             lock (ticks)
             {
@@ -135,6 +141,18 @@ namespace Leech
             lock (ticks)
             {
                 return ticks.LastOrDefault();
+            }
+        }
+
+        /// <summary>
+        /// Последний тик
+        /// </summary>
+        /// <returns>Если тиков нет, то default(Tick)</returns>
+        public Tick GetLastTick()
+        {
+            lock (this)
+            {
+                return _lastTick;
             }
         }
 
