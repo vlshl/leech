@@ -341,5 +341,17 @@ namespace Storage
                 throw new Exception("Database error occurred while updating free days.", ex);
             }
         }
+
+        /// <summary>
+        /// Delete old bars (from all insstores) 
+        /// </summary>
+        /// <param name="beforeDate">Starting date of the stored data, bars before the specified date will be deleted</param>
+        /// <param name="cancel">Cancel object (use for cancel continuous operation)</param>
+        public void DeleteOldBars(DateTime beforeDate, CancellationToken cancel)
+        {
+            _da.DbContext.Execute("delete from BarHistory where Time < ?", StorageLib.ToDbTime(beforeDate.Date));
+            //_da.DbContext.Execute("vacuum");
+        }
+
     }
 }

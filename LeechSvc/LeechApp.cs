@@ -20,6 +20,7 @@ namespace LeechSvc
         void CloseTerminal();
         void Connect();
         void Disconnect();
+        void DeleteOldBars();
     }
 
     /// <summary>
@@ -47,10 +48,11 @@ namespace LeechSvc
         private readonly DataProtect _dataProtect = null;
         private LpClientApp _lpClientApp;
         private string _sessionDbPath = "";
+        private readonly IInsStoreBL _insStoreBL;
 
         public LeechApp(ILeechConfig config, IBotManager botManager, IBotsConfiguration botsConfig, ITickDispatcher tickDisp, IDataStorage dataStorage, 
             IInstrumTable insTable, IStopOrderTable stopOrderTable, IOrderTable orderTable, ITradeTable tradeTable, 
-            IHoldingTable holdingTable, ICashTable positionTable, AccountTable accountTable, IInsStoreData insStoreData, ILogger logger)
+            IHoldingTable holdingTable, ICashTable positionTable, AccountTable accountTable, IInsStoreData insStoreData, ILogger logger, IInsStoreBL insStoreBL)
         {
             _config = config;
             _scheduler = new Scheduler(logger);
@@ -67,6 +69,7 @@ namespace LeechSvc
             _cashTable = positionTable;
             _insStoreData = insStoreData;
             _logger = logger;
+            _insStoreBL = insStoreBL;
             _dataProtect = IoC.Resolve<DataProtect>();
             _lpClientApp = new LpClientApp(_dataProtect, _instrumTable, _accountTable, _stopOrderTable, _orderTable,
                 _tradeTable, _cashTable, _holdingTable, _tickDispatcher, _logger);
@@ -104,6 +107,7 @@ namespace LeechSvc
 
         /// <summary>
         /// Завершение после окончания торговой сессии.
+        /// Удаление старых котировок и сжатие базы.
         /// </summary>
         public void CloseSession()
         {
@@ -112,6 +116,8 @@ namespace LeechSvc
             _alorTrade.Close();
             _allTradesData.SaveData(_tickDispatcher, _sessionDbPath);
             _logger.AddInfo("LeechApp", "Session closed");
+
+            DeleteOldBars();
         }
 
         public void OpenTerminal()
@@ -148,6 +154,23 @@ namespace LeechSvc
         {
             _logger.AddInfo("LeechApp", "Disconnect");
             _alorTrade.Disconnect();
+        }
+
+        /// <summary>
+        /// Удаление старых данных из базы
+        /// </summary>
+        public void DeleteOldBars()
+        {
+            try
+            {
+                _logger.AddInfo("LeechApp", "Deleting bar history older " + _config.DeleteBarHistoryOlderDays.ToString() + " days");
+                _insStoreBL.DeleteOldBars(_config.DeleteBarHistoryOlderDays);
+                _logger.AddInfo("LeechApp", _config.DeleteBarHistoryOlderDays > 0 ? "Deletion completed" : "Nothing to delete");
+            }
+            catch(Exception ex)
+            {
+                _logger.AddException("LeechApp", ex);
+            }
         }
 
         /// <summary>

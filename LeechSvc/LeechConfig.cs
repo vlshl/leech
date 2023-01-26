@@ -25,6 +25,7 @@ namespace LeechSvc
         int CorrectHours { get; }
         TimeSpan StartSessionMskTime { get; }
         TimeSpan EndSessionMskTime { get; }
+        int DeleteBarHistoryOlderDays { get; }
     }
 
     /// <summary>
@@ -218,6 +219,14 @@ namespace LeechSvc
             get
             {
                 return Properties.Settings.Default.EndSessionMskTime;
+            }
+        }
+
+        public int DeleteBarHistoryOlderDays
+        {
+            get
+            {
+                return Properties.Settings.Default.DeleteBarHistoryOlderDays;
             }
         }
     }

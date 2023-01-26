@@ -81,6 +81,7 @@ namespace LeechSvc
             Console.WriteLine("closeterm\tЗакрыть торговый терминал");
             Console.WriteLine("conn\t\tУстановить соединение с сервером брокера (торговый терминал должен быть открыт)");
             Console.WriteLine("disconn\t\tРазорвать соединение с сервером брокера");
+            Console.WriteLine("delhist\t\tУдалить старые котировки и сжать базу");
             Console.WriteLine("exit\t\tВыход из программы");
 
             this.OnStart(args);
@@ -98,6 +99,7 @@ namespace LeechSvc
                     if (line == "closeterm") _app.CloseTerminal();
                     if (line == "conn") _app.Connect();
                     if (line == "disconn") _app.Disconnect();
+                    if (line == "delhist") _app.DeleteOldBars();
                 }
             });
 

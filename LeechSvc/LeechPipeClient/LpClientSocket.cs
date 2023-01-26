@@ -69,7 +69,7 @@ namespace LeechSvc.LeechPipeClient
             {
                 try
                 {
-                    var response = await client.PostAsync(httpProto + urlBody + "/auth", content);
+                    var response = await client.PostAsync(httpProto + urlBody + "/auth/user", content);
                     if (!response.IsSuccessStatusCode) return new ConnectResult(false, response.ReasonPhrase);
                     var result = await response.Content.ReadAsStringAsync();
                     authUser = JsonConvert.DeserializeObject<AuthUser>(result);

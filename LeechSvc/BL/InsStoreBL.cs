@@ -14,6 +14,7 @@ namespace LeechSvc.BL
     {
         void InsertData(int insStoreID, IEnumerable<Bar> bars, DateTime date1, DateTime date2, bool isLastDirty, CancellationToken cancel);
         Task<int> LoadHistoryAsync(BarRow bars, int insID, DateTime date1, DateTime date2, int? insStoreID = null);
+        void DeleteOldBars(int days);
     }
 
     public class InsStoreBL : IInsStoreBL
@@ -206,7 +207,6 @@ namespace LeechSvc.BL
             return ss;
         }
 
-
         private InsStoreCalendar GetInsStoreCalendar(int insStoreID)
         {
             if (_insStoreID_calendar.ContainsKey(insStoreID))
@@ -255,6 +255,18 @@ namespace LeechSvc.BL
             }
 
             return freeDates.ToArray();
+        }
+
+        /// <summary>
+        /// Удаление старых данных (баров) по всем потокам (insStore)
+        /// </summary>
+        /// <param name="days">Удаляются все бары по всем стримам старше указанного количества дней от текущей даты (today) на момент выполнения операции</param>
+        public void DeleteOldBars(int days)
+        {
+            if (days <= 0) return;
+
+            var beforeDate = DateTime.Today.AddDays(-days).Date;
+            _insStoreDA.DeleteOldBars(beforeDate, new CancellationToken());
         }
     }
 }

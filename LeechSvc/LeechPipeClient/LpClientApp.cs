@@ -55,7 +55,12 @@ namespace LeechSvc.LeechPipeClient
         private async Task<bool> ConnectAsync()
         {
             string url; string login; string password;
-            _dataProtect.GetPulxerParams(out url, out login, out password);
+            bool isSuccess = _dataProtect.GetPulxerParams(out url, out login, out password);
+            if (!isSuccess)
+            {
+                _logger.AddError("LpClientApp", "Get connection params error");
+                return false;
+            }
 
             var res = await _socket.ConnectAsync(url, login, password);
             if (!res.IsSuccess)

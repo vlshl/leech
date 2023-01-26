@@ -23,5 +23,6 @@ namespace Common.Interfaces
         void UpdatePeriods(int insStoreID, IEnumerable<Common.InsStorePeriod> periods);
         IEnumerable<DateTime> GetFreeDays(int insStoreID);
         void UpdateFreeDays(int insStoreID, IEnumerable<DateTime> freeDays);
+        void DeleteOldBars(DateTime beforeDate, CancellationToken cancel);
     }
 }

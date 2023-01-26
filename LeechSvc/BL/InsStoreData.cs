@@ -141,7 +141,7 @@ namespace LeechSvc.BL
             catch (Exception ex)
             {
                 _storage.Rollback(isNewTran);
-                _logger.AddException("InsStoreBL:SaveData", ex);
+                _logger.AddException("InsStoreData:SaveData", ex);
             }
 
             _logger.AddInfo("InsStoreData", string.Format("Bars saved: {0} - {1}", firstDate.ToString("dd.MM.yyyy"), lastDate.ToString("dd.MM.yyyy")));
