@@ -12,7 +12,7 @@ namespace LeechSvc.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.6.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.1.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -79,51 +79,6 @@ namespace LeechSvc.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("07:00:00")]
-        public global::System.TimeSpan StartSessionMskTime {
-            get {
-                return ((global::System.TimeSpan)(this["StartSessionMskTime"]));
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("23:55:00")]
-        public global::System.TimeSpan EndSessionMskTime {
-            get {
-                return ((global::System.TimeSpan)(this["EndSessionMskTime"]));
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("07:55:00")]
-        public global::System.TimeSpan OpenSessionLocalTime {
-            get {
-                return ((global::System.TimeSpan)(this["OpenSessionLocalTime"]));
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("07:56:00")]
-        public global::System.TimeSpan OpenTerminalLocalTime {
-            get {
-                return ((global::System.TimeSpan)(this["OpenTerminalLocalTime"]));
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("07:57:00")]
-        public global::System.TimeSpan ConnectLocalTime {
-            get {
-                return ((global::System.TimeSpan)(this["ConnectLocalTime"]));
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("00:55:00")]
         public global::System.TimeSpan DisconnectLocalTime {
             get {
@@ -155,6 +110,51 @@ namespace LeechSvc.Properties {
         public int DeleteBarHistoryOlderDays {
             get {
                 return ((int)(this["DeleteBarHistoryOlderDays"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("10:00:00")]
+        public global::System.TimeSpan StartSessionMskTime {
+            get {
+                return ((global::System.TimeSpan)(this["StartSessionMskTime"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("23:50:00")]
+        public global::System.TimeSpan EndSessionMskTime {
+            get {
+                return ((global::System.TimeSpan)(this["EndSessionMskTime"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("10:45:00")]
+        public global::System.TimeSpan OpenSessionLocalTime {
+            get {
+                return ((global::System.TimeSpan)(this["OpenSessionLocalTime"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("10:46:00")]
+        public global::System.TimeSpan OpenTerminalLocalTime {
+            get {
+                return ((global::System.TimeSpan)(this["OpenTerminalLocalTime"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("10:47:00")]
+        public global::System.TimeSpan ConnectLocalTime {
+            get {
+                return ((global::System.TimeSpan)(this["ConnectLocalTime"]));
             }
         }
     }

@@ -1,6 +1,7 @@
 ﻿using Common;
 using LeechPipe;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -53,7 +54,7 @@ namespace LeechSvc.LeechPipeClient
                 var instrum = _instrumTable.GetInstrum(ticker);
                 if (instrum == null)
                 {
-                    _core.SendResponseAsync(this, new byte[] { 0xff });
+                    _core.SendResponseAsync(this, new byte[] { 0xff }).Wait();
                     return;
                 }
 
@@ -82,6 +83,18 @@ namespace LeechSvc.LeechPipeClient
                     }
                     _core.SendResponseAsync(this, ms.ToArray()).Wait();
                 }
+            }
+
+            if (args.Length == 1 && args[0] == "GetLastTickTs")
+            {
+                string str = "";
+                var lastTick = _tickDisp.GetLastTick();
+                if (lastTick.InsID != 0)
+                {
+                    str = lastTick.Time.ToString("yyyy-MM-dd HH:mm:ss");
+                }
+                var bytes = Encoding.UTF8.GetBytes(str);
+                _core.SendResponseAsync(this, bytes).Wait();
             }
         }
     }

@@ -101,7 +101,7 @@ namespace LeechSvc
             _botsConfig.Load();
             _botManager.Initialize();
             _alorTrade.Initialize();
-            _lpClientApp.Initialize();
+
             _logger.AddInfo("LeechApp", "Session opened");
         }
 
@@ -179,7 +179,9 @@ namespace LeechSvc
         public void Initialize()
         {
             _logger.AddInfo("LeechApp", "Initialize");
+
             _dataStorage.Initialize();
+            _lpClientApp.Initialize();
 
             // создание списка запланированных действий
             _scheduler.ClearAllItems();
@@ -198,6 +200,7 @@ namespace LeechSvc
         public void Close()
         {
             _logger.AddInfo("LeechApp", "Close");
+
             _lpClientApp.Close();
             _scheduler.Stop();
             _dataStorage.Close();

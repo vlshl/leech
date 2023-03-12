@@ -77,6 +77,7 @@ namespace LeechSvc.LeechPipeClient
 
         public async Task<bool> CloseAsync()
         {
+            _logger.AddInfo("LpClientApp", "Close");
             _core.Close();
             return await _socket.CloseAsync();
         }

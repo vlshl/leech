@@ -23,7 +23,7 @@ namespace Leech
         private List<TickThreadControl> _ttcs = null;
         private Dictionary<int, List<Tick>> _insID_ticks;
         private readonly ILogger _logger = null;
-        private Tick _lastTick = default;
+        private Tick _lastTick;
 
         /// <summary>
         /// Конструктор
@@ -33,6 +33,7 @@ namespace Leech
             _logger = logger;
             _ttcs = new List<TickThreadControl>();
             _insID_ticks = new Dictionary<int, List<Tick>>();
+            _lastTick = default(Tick);
         }
 
         /// <summary>
@@ -42,7 +43,14 @@ namespace Leech
         {
             _logger.AddInfo("TickDispatcher", "Initialize ...");
             UnsubscribeAll();
-            _insID_ticks.Clear();
+            lock(_insID_ticks)
+            {
+                _insID_ticks.Clear();
+            }
+            lock (this)
+            {
+                _lastTick = default(Tick);
+            }
             _logger.AddInfo("TickDispatcher", "Initialized");
         }
 
