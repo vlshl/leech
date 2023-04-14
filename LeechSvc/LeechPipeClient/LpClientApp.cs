@@ -24,7 +24,7 @@ namespace LeechSvc.LeechPipeClient
             ICashTable positionTable, IHoldingTable holdingTable, ITickDispatcher tickDisp, ILogger logger)
         {
             _dataProtect = dataProtect;
-            _socket = new LpClientSocket();
+            _socket = new LpClientSocket(logger);
             _core = new LpCore(_socket, false); // клиент
             _pipeFactory = new LpAppFactory(_core, instrumTable, accountTable, stopOrderTable, orderTable, tradeTable, positionTable, holdingTable, tickDisp);
             _sysPipe = new SystemLp(_pipeFactory, _core);

@@ -15,6 +15,7 @@ namespace LeechSvc
         private int _curPrice;
         private byte[] _buffer;
         private byte _buffer_count;
+        private long _t0;
 
         /// <summary>
         /// Конструктор
@@ -26,17 +27,22 @@ namespace LeechSvc
 		    _curSecond = 0;
 		    _curPrice = 0;
             _buffer = new byte[32];
-	    }
+            _t0 = new DateTime(2000, 1, 1).Ticks;
+        }
 
         /// <summary>
         /// Кодирует информацию о сделке в массив байт
         /// </summary>
-        /// <param name="second">Секунда сделки</param>
+        /// <param name="ts">Дата и время сделки</param>
         /// <param name="price">Цена</param>
         /// <param name="lots">Кол-во лотов</param>
         /// <returns>Массив байт с кодированной информацией</returns>
-        public byte[] AddTick(uint second, decimal price, int lots)
+        public byte[] AddTick(DateTime ts, decimal price, int lots)
         {
+            long s = (ts.Ticks - _t0) / TimeSpan.TicksPerSecond;
+            if (s < 0) s = 0; if (s > uint.MaxValue) s = uint.MaxValue;
+            uint second = (uint)s;
+
             _buffer_count = 0;
             uint diffSec = (uint)(second - _curSecond);
             EncodeTime(second, diffSec);

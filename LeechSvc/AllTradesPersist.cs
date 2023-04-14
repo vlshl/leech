@@ -6,6 +6,9 @@ namespace LeechSvc
 {
     /// <summary>
     /// Файловое хранение информации о сделках по конкретному тикеру
+    /// Версия 1.0 - у сделок передается местное время
+    /// Версия 1.1 - у сделок передается время биржи (МСК) в формате кол-во секунд с начала торговой сессии (4 байта)
+    /// Версия 1.2 - у сделок передается дата и время биржи в формате кол-во секунд с 01.01.2000 (4 байта)
     /// </summary>
     public class AllTradesPersist
     {
@@ -26,7 +29,7 @@ namespace LeechSvc
         /// <param name="ticker">Тикер</param>
         public void Initialize(string path, string ticker)
         {
-            const string version = "AllTrades 1.1   "; // header size = 16
+            const string version = "AllTrades 1.2   "; // header size = 16
 
             string filename = Path.Combine(path, ticker);
             _fs = File.Create(filename);

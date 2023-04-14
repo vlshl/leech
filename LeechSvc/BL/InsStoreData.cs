@@ -137,14 +137,16 @@ namespace LeechSvc.BL
 
                 _reposBL.SetIntParam(LAST_HISTORY_DATA, StorageLib.ToDbTime(lastDate));
                 _storage.Commit(isNewTran);
+
+                _logger.AddInfo("InsStoreData", string.Format("Bars saved: {0} - {1}", firstDate.ToString("dd.MM.yyyy"), lastDate.ToString("dd.MM.yyyy")));
             }
             catch (Exception ex)
             {
                 _storage.Rollback(isNewTran);
-                _logger.AddException("InsStoreData:SaveData", ex);
+                _logger.AddError("InsStoreData", "Save data error. " + string.Format("First = {0}, last = {1}", firstDate.ToString("dd.MM.yyyy HH:mm:ss"), lastDate.ToString("dd.MM.yyyy HH:mm:ss")));
+                _logger.AddException("InsStoreData", ex);
             }
 
-            _logger.AddInfo("InsStoreData", string.Format("Bars saved: {0} - {1}", firstDate.ToString("dd.MM.yyyy"), lastDate.ToString("dd.MM.yyyy")));
         }
         private string LAST_HISTORY_DATA = "LastHistoryData";
     }

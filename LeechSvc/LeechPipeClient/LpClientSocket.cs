@@ -1,4 +1,5 @@
 ﻿using LeechPipe;
+using LeechSvc.Logger;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -19,12 +20,14 @@ namespace LeechSvc.LeechPipeClient
         private HttpClient _client;
         private CancellationTokenSource _cts;
         private CancellationTokenSource _recvCts;
+        private readonly ILogger _logger;
 
-        public LpClientSocket()
+        public LpClientSocket(ILogger logger)
         {
             _cts = new CancellationTokenSource();
             _recvCts = new CancellationTokenSource();
             _client = new HttpClient();
+            _logger = logger;
         }
 
         public void Cancel()
@@ -77,6 +80,7 @@ namespace LeechSvc.LeechPipeClient
                 }
                 catch (Exception ex)
                 {
+                    _logger.AddException("LpClientSocket:ConnectAsync:Auth", ex);
                     return new ConnectResult(false, ex.Message);
                 }
             }
@@ -90,6 +94,7 @@ namespace LeechSvc.LeechPipeClient
             }
             catch(Exception ex)
             {
+                _logger.AddException("LpClientSocket:ConnectAsync:Connect", ex);
                 return new ConnectResult(false, ex.Message);
             }
 
@@ -120,32 +125,47 @@ namespace LeechSvc.LeechPipeClient
             byte[] buffer = new byte[LpCore.SEGMENT_SIZE];
             WebSocketReceiveResult res;
 
-            using (var ms = new MemoryStream())
+            try
             {
-                do
+                using (var ms = new MemoryStream())
                 {
-                    ArraySegment<byte> segm = new ArraySegment<byte>(buffer, 0, buffer.Length);
-                    res = await _socket.ReceiveAsync(segm, _recvCts.Token);
-                    ms.Write(buffer, 0, res.Count);
-                } while (!res.EndOfMessage);
+                    do
+                    {
+                        ArraySegment<byte> segm = new ArraySegment<byte>(buffer, 0, buffer.Length);
+                        res = await _socket.ReceiveAsync(segm, _recvCts.Token);
+                        ms.Write(buffer, 0, res.Count);
+                    } while (!res.EndOfMessage);
 
-                return ms.ToArray();
+                    return ms.ToArray();
+                }
+            }
+            catch(Exception ex)
+            {
+                _logger.AddException("LpClientSocket:RecvMessageAsync", ex);
+                return null;
             }
         }
 
         public async Task SendMessageAsync(byte[] buffer)
         {
-            int offset = 0;
-            while (offset < buffer.Length)
+            try
             {
-                int restLen = buffer.Length - offset;
-                bool endOfMessage = restLen <= LpCore.SEGMENT_SIZE;
-                int count = endOfMessage ? restLen : LpCore.SEGMENT_SIZE;
+                int offset = 0;
+                while (offset < buffer.Length)
+                {
+                    int restLen = buffer.Length - offset;
+                    bool endOfMessage = restLen <= LpCore.SEGMENT_SIZE;
+                    int count = endOfMessage ? restLen : LpCore.SEGMENT_SIZE;
 
-                await _socket.SendAsync(new ArraySegment<byte>(buffer, offset, count),
-                    WebSocketMessageType.Binary, endOfMessage, _cts.Token);
+                    await _socket.SendAsync(new ArraySegment<byte>(buffer, offset, count),
+                        WebSocketMessageType.Binary, endOfMessage, _cts.Token);
 
-                offset += count;
+                    offset += count;
+                }
+            }
+            catch(Exception ex)
+            {
+                _logger.AddException("LpClientSocket:SendMessageAsync", ex);
             }
         }
     }

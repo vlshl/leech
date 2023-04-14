@@ -77,8 +77,7 @@ namespace LeechSvc.LeechPipeClient
                 {
                     foreach (var tick in ticks)
                     {
-                        uint seconds = (uint)(tick.Time.Hour * 60 * 60 + tick.Time.Minute * 60 + tick.Time.Second);
-                        byte[] buf = encoder.AddTick(seconds, tick.Price, tick.Lots);
+                        byte[] buf = encoder.AddTick(tick.Time, tick.Price, tick.Lots);
                         ms.Write(buf, 0, buf.Length);
                     }
                     _core.SendResponseAsync(this, ms.ToArray()).Wait();

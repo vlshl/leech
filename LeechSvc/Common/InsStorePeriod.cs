@@ -25,7 +25,7 @@ namespace Common
         public InsStorePeriod(DateTime start, DateTime end, bool isLastDirty = false)
         {
             if (end < start)
-                throw new ArgumentException();
+                throw new ArgumentException("start:" + start.ToString("yyyy-MM-dd HH:mm:ss") + ", end:" + end.ToString("yyyy-MM-dd HH:mm:ss"));
             StartDate = start.Date;
             EndDate = end.Date;
             IsLastDirty = isLastDirty;

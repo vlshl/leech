@@ -62,8 +62,7 @@ namespace LeechSvc
 
                     foreach (Tick tick in ticks)
                     {
-                        uint seconds = (uint)(tick.Time.Hour * 60 * 60 + tick.Time.Minute * 60 + tick.Time.Second);
-                        byte[] buf = encoder.AddTick(seconds, tick.Price, tick.Lots);
+                        byte[] buf = encoder.AddTick(tick.Time, tick.Price, tick.Lots);
                         persist.Write(buf);
                         _insStoreData.AddTick(insID, tick.Time, tick.Price, tick.Lots);
                     }
