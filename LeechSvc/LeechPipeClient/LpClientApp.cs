@@ -10,7 +10,7 @@ namespace LeechSvc.LeechPipeClient
 {
     public class LpClientApp
     {
-        private const int PERIOD = 60 * 1000;
+        private const int PERIOD = 10 * 1000;
         private LpClientSocket _socket;
         private LpCore _core;
         private SystemLp _sysPipe;

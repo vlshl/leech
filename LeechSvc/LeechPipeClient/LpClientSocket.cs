@@ -146,7 +146,7 @@ namespace LeechSvc.LeechPipeClient
             }
         }
 
-        public async Task SendMessageAsync(byte[] buffer)
+        public async Task<bool> SendMessageAsync(byte[] buffer)
         {
             try
             {
@@ -162,10 +162,13 @@ namespace LeechSvc.LeechPipeClient
 
                     offset += count;
                 }
+
+                return true;
             }
             catch(Exception ex)
             {
                 _logger.AddException("LpClientSocket:SendMessageAsync", ex);
+                return false;
             }
         }
     }
