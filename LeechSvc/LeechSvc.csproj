@@ -111,6 +111,7 @@
     <Compile Include="Bots\BotConfig.cs" />
     <Compile Include="Bots\BotManager.cs" />
     <Compile Include="Bots\BotsConfiguration.cs" />
+    <Compile Include="Calendar.cs" />
     <Compile Include="Common\Bar.cs" />
     <Compile Include="Common\BarRow.cs" />
     <Compile Include="Common\BotBase.cs" />

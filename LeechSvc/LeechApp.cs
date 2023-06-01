@@ -183,14 +183,17 @@ namespace LeechSvc
             _dataStorage.Initialize();
             _lpClientApp.Initialize();
 
+            var calendar = new Calendar(_config);
+            calendar.Initialize();
+
             // создание списка запланированных действий
             _scheduler.ClearAllItems();
-            _scheduler.AddItem(_config.GetOpenSessionLocalTime(), () => { OpenSession(); });
-            _scheduler.AddItem(_config.GetOpenTerminalLocalTime(), () => { OpenTerminal(); });
-            _scheduler.AddItem(_config.GetConnectLocalTime(), () => { Connect(); });
-            _scheduler.AddItem(_config.GetDisconnectLocalTime(), () => { Disconnect(); });
-            _scheduler.AddItem(_config.GetCloseTerminalLocalTime(), () => { CloseTerminal(); });
-            _scheduler.AddItem(_config.GetCloseSessionLocalTime(), () => { CloseSession(); });
+            _scheduler.AddItem(_config.GetOpenSessionLocalTime(), () => { if (calendar.IsWorkLocalTime(DateTime.Now)) OpenSession(); });
+            _scheduler.AddItem(_config.GetOpenTerminalLocalTime(), () => { if (calendar.IsWorkLocalTime(DateTime.Now)) OpenTerminal(); });
+            _scheduler.AddItem(_config.GetConnectLocalTime(), () => { if (calendar.IsWorkLocalTime(DateTime.Now)) Connect(); });
+            _scheduler.AddItem(_config.GetDisconnectLocalTime(), () => { if (calendar.IsWorkLocalTime(DateTime.Now)) Disconnect(); });
+            _scheduler.AddItem(_config.GetCloseTerminalLocalTime(), () => { if (calendar.IsWorkLocalTime(DateTime.Now)) CloseTerminal(); });
+            _scheduler.AddItem(_config.GetCloseSessionLocalTime(), () => { if (calendar.IsWorkLocalTime(DateTime.Now)) CloseSession(); });
             _scheduler.Start(); // запуск планировщика
         }
 

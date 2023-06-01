@@ -26,6 +26,9 @@ namespace LeechSvc
         TimeSpan StartSessionMskTime { get; }
         TimeSpan EndSessionMskTime { get; }
         int DeleteBarHistoryOlderDays { get; }
+        string Weekends { get; }
+        string Holidays { get; }
+        string Workdays { get; }
     }
 
     /// <summary>
@@ -227,6 +230,30 @@ namespace LeechSvc
             get
             {
                 return Properties.Settings.Default.DeleteBarHistoryOlderDays;
+            }
+        }
+
+        public string Weekends
+        {
+            get
+            {
+                return Properties.Settings.Default.Weekends;
+            }
+        }
+
+        public string Holidays
+        {
+            get
+            {
+                return Properties.Settings.Default.Holidays;
+            }
+        }
+
+        public string Workdays
+        {
+            get
+            {
+                return Properties.Settings.Default.Workdays;
             }
         }
     }
