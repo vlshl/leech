@@ -1,5 +1,6 @@
 ﻿using Common;
 using LeechPipe;
+using LeechSvc.Logger;
 using System.Text;
 
 namespace LeechSvc.LeechPipeClient
@@ -15,9 +16,11 @@ namespace LeechSvc.LeechPipeClient
         private readonly ICashTable _positionTable;
         private readonly IHoldingTable _holdingTable;
         private readonly ITickDispatcher _tickDisp;
+        private readonly ILeechConfig _config;
+        private readonly ILogger _logger;
 
         public LpAppFactory(ILpCore core, IInstrumTable instrumTable, IAccountTable accountTable, IStopOrderTable stopOrderTable,
-            IOrderTable orderTable, ITradeTable tradeTable, ICashTable positionTable, IHoldingTable holdingTable, ITickDispatcher tickDisp)
+            IOrderTable orderTable, ITradeTable tradeTable, ICashTable positionTable, IHoldingTable holdingTable, ITickDispatcher tickDisp, ILeechConfig config, ILogger logger)
         {
             _core = core;
             _instrumTable = instrumTable;
@@ -28,6 +31,8 @@ namespace LeechSvc.LeechPipeClient
             _positionTable = positionTable;
             _holdingTable = holdingTable;
             _tickDisp = tickDisp;
+            _config = config;
+            _logger = logger;
         }
 
         public ILpReceiver CreatePipe(byte[] pipeInitData)
@@ -43,6 +48,10 @@ namespace LeechSvc.LeechPipeClient
             else if (cmd == "tick")
             {
                 return new TickPipe(_core, _tickDisp, _instrumTable);
+            }
+            else if (cmd == "tick-history")
+            {
+                return new TickHistoryPipe(_core, _config, _logger);
             }
 
             return null;

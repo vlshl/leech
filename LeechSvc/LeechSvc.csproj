@@ -147,6 +147,7 @@
     <Compile Include="LeechPipeClient\LpClientApp.cs" />
     <Compile Include="LeechPipeClient\LpClientSocket.cs" />
     <Compile Include="LeechPipeClient\SyncPipe.cs" />
+    <Compile Include="LeechPipeClient\TickHistoryPipe.cs" />
     <Compile Include="LeechPipeClient\TickPipe.cs" />
     <Compile Include="LeechPlatform.cs" />
     <Compile Include="LeechService.cs">

@@ -18,17 +18,19 @@ namespace LeechSvc.LeechPipeClient
         private bool _isWorking = true;
         private DataProtect _dataProtect;
         private ILogger _logger;
+        private readonly ILeechConfig _config;
 
         public LpClientApp(DataProtect dataProtect, IInstrumTable instrumTable, 
             IAccountTable accountTable, IStopOrderTable stopOrderTable, IOrderTable orderTable, ITradeTable tradeTable, 
-            ICashTable positionTable, IHoldingTable holdingTable, ITickDispatcher tickDisp, ILogger logger)
+            ICashTable positionTable, IHoldingTable holdingTable, ITickDispatcher tickDisp, ILeechConfig config, ILogger logger)
         {
             _dataProtect = dataProtect;
             _socket = new LpClientSocket(logger);
             _core = new LpCore(_socket, false); // клиент
-            _pipeFactory = new LpAppFactory(_core, instrumTable, accountTable, stopOrderTable, orderTable, tradeTable, positionTable, holdingTable, tickDisp);
+            _pipeFactory = new LpAppFactory(_core, instrumTable, accountTable, stopOrderTable, orderTable, tradeTable, positionTable, holdingTable, tickDisp, config, logger);
             _sysPipe = new SystemLp(_pipeFactory, _core);
             _logger = logger;
+            _config = config;
         }
 
         public void Initialize()
