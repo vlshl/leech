@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace LeechSvc
 {
@@ -56,7 +53,7 @@ namespace LeechSvc
                 if (!int.TryParse(dms[0], out d)) continue;
                 if (!int.TryParse(dms[1], out m)) continue;
 
-                var dt = new DateTime(1, m, d);
+                var dt = new DateTime(2000, m, d); // год фиктивный, но должен быть високосный, чтобы дата 29.02 была корректной для этого года
                 _holidays.Add(dt);
             }
 
@@ -71,7 +68,7 @@ namespace LeechSvc
                 if (!int.TryParse(dms[0], out d)) continue;
                 if (!int.TryParse(dms[1], out m)) continue;
 
-                var dt = new DateTime(1, m, d);
+                var dt = new DateTime(2000, m, d);
                 _workdays.Add(dt);
             }
         }
@@ -91,7 +88,7 @@ namespace LeechSvc
             bool isWorkTime = true;
             if (_weekends.Contains(mskTime.DayOfWeek)) isWorkTime = false;
             
-            DateTime d = new DateTime(1, mskTime.Month, mskTime.Day);
+            DateTime d = new DateTime(2000, mskTime.Month, mskTime.Day);
             if (_holidays.Contains(d)) isWorkTime = false;
             if (_workdays.Contains(d)) isWorkTime = true;
 
